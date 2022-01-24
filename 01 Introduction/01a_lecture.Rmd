@@ -65,7 +65,7 @@ theme_set(theme_light())
 - The course is scheduled from Monday (24th of Jan) to Friday (28th of Jan) from 2pm to 8pm Berlin time (that is UTC+2). 
 
 - We split these 6h block into two chunks: 
-  - 2pm - 4:45 pm and 5:15 pm to 8pm
+  - 2pm - 4:45 pm and 5:15 pm to 8 pm
   - Each chunk will consists of 
     - a short lecture 
     - an R walkthrough
@@ -170,7 +170,7 @@ for (i in 1:10) {
 
 # Recommended setup
 
-- We would recommend to download the whole repository from GitHub (@TODO Link)^[If you are familiar with git, feel free to clone the repository]. 
+- We would recommend to download the whole repository from GitHub (https://github.com/jmsigner/movement_workshop_public)^[If you are familiar with git, feel free to clone the repository]. 
 
 - Then use the RStudio project (together with RStudio).
 - Following these guides, you should have all paths correct. 
