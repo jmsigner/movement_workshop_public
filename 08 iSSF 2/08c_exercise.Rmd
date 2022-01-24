@@ -1,0 +1,84 @@
+---
+title: "iSSF Pt 2 Exercise"
+author: "Brian J. Smith"
+date: "27 January 2022"
+output: 
+  html_document:
+    theme: default
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Let's apply what we've learned about HSFs. Refer to the lecture slides (<a href="08a_lecture.html" target="_blank" rel="noopener noreferrer">08a_lecture.html</a>) and the walkthrough code (`08b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use some sample coyote data from UT. These data were published by Mahoney et al. (2017) [here](https://www.datarepository.movebank.org/handle/10255/move.590). These data were originally used in this manuscript:
+
+> Mahoney PJ, Young JK (2016) Uncovering behavioural states from animal activity and site fidelity patterns. Methods in Ecology and Evolution 8(2): 174–183. [doi:10.1111/2041-210X.12658](https://doi.org/10.1111/2041-210X.12658)
+
+We've already downloaded and processed the data, which you can find in `data/coyote_cougar.csv`. We've also downloaded and processed some environmental raster data for you to use, which you can find as a multi-band GeoTiff in `data/coyote_cougar_habitat.tif`.
+
+Habitat layers are:  
+
+- Elevation (m)
+- Tree cover (%)
+- Herbaceous biomass (kg/ha)
+- Distance to nearest road (m)
+
+We will go over how to model multiple animals in a later module, so for now,
+subset your data to just one animal.
+
+```{r data, eval = FALSE}
+# Load `tidyverse` and `raster`
+library(tidyverse)
+library(raster)
+
+# Location data as 'track_xyt'
+dat <- read_csv("data/coyote_cougar.csv") %>% 
+  # Subset to just the coyote
+  filter(id == "C028")
+
+# Habitat data as stack
+hab <- stack("data/coyote_cougar_habitat.tif")
+names(hab) <- c("elevation", "trees", "biomass", "dist_to_road")
+
+```
+
+## Instructions
+
+1. Load your data or the example data. Subset to a single individual.
+
+    * Recall that iSSFs assume a constant step duration. Make sure your data are (approximately) regularly sampled before you continue.
+    * You will want a fairly large sample size as your model grows in parameters by including interaction terms.
+    
+2. Before you get started, consider your habitat variables. 
+
+    * Decide *a priori* whether each variable represents a resource, risk, or condition. 
+    * Should any of your habitat covariates interact with each other? Why?
+    * Which of your covariates might affect the movement process? 
+    * Include your thoughts about each variable as comments in your analysis script.
+    
+3. Fit an iSSF, with at least one interaction.
+
+    * Make sure the form of each variable matches your *a priori* hypotheses about it from above. Pay careful attention to understand what your interaction terms mean.
+    
+4. Make at least one plot showing the RSS (or log-RSS) for one of your habitat variables.
+
+    * What does this plot tell you about the biology of your system?
+    
+5. Make at least one plot showing the step-length or turn-angle distribution for your animal.
+
+    * If you have interactions with step-length or turn-angle, make sure you show this.
+    
+
+<br>
+<hr>
+<br>
+
+

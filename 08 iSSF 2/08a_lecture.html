@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>iSSFs Part 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian J. Smith" />
+    <meta name="date" content="2022-01-27" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="../css/default.css" type="text/css" />
+    <link rel="stylesheet" href="../css/default-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: center, middle, inverse
+
+# iSSA, Part 2
+## Movement and Habitat Interactions
+
+Brian J. Smith  
+27 January 2022
+
+*Analysis of Animal Movement Data in R*  
+J. Signer &amp; B. Smith  
+
+---
+class: center, middle
+
+# Review of iSSA
+
+---
+
+## Review of iSSA
+
+Availability in (i)SSA is defined at the step level.
+
+- Analyzed with *conditional* logistic regression, comparing used and available for each observed step paired with many available steps.
+
+- Allows time-varying covariates.
+
+---
+
+## Review of iSSA
+
+Unlike *unconditional* HSFs, (i)SSFs are appropriate for movement data with high fix rates.
+
+---
+
+## Review of iSSA
+
+Ordinary step-selection analysis estimates habitat selection parameters with **bias**.
+
+- Due to the unmodeled dependency between realized movement and realized habitat selection.
+
+- Sampling available steps from the observed movement distributions propagates this correlation to the conditional logistic regression.
+
+---
+
+## Review of iSSA
+
+*Integrated* step-selection analysis parameterizes two independent processes:
+
+1. Movement-free habitat selection
+
+2. Selection-free movement
+
+These two processes combine to give rise to the observed movement trajectory.
+
+---
+
+## Review of iSSA
+
+iSSA requires available steps to be sampled from a theoretical distribution.
+
+- Distributions must be from the exponential family to be fit via GLM.
+
+- Step lengths and turn angles are modeled separately.
+
+- Movement parameters estimated by GLM *adjust* tentative distribution to estimate the parameters of the true selection-free movement distribution.
+
+---
+
+## Review of iSSA
+
+Habitat selection parameters can still be interpreted using (log-)RSS.
+
+- RSS is how many times more steps you expect to land in habitat `\(x_1\)` vs. habitat `\(x_2\)`, conditional on the starting location of the step and the movement parameters.
+
+  - Don't forget the conditional nature of steps.
+  
+???
+
+Note that "how many times more steps" is equivalent to "how much more likely" over the long run. I.e., we can interpret the expected value or the probability.
+
+---
+
+## Review of iSSA
+
+Unlike unconditional HSFs, (i)SSF selection coefficients cannot be easily projected into geographic space.
+
+- In some cases, steady-state utilization distributions can be estimated analytically.
+
+- In most cases, the easiest solution is to obtain the UD via simulation.
+
+  - Also gives the flexibility to estimate a transient UD or a steady-state UD.
+
+---
+class: inverse
+## Take-home messages
+
+- (i)SSFs define availability at the step level and so are appropriate for high-fix-rate movement data.
+
+- Use iSSA to avoid the bias introduced by ordinary SSA.
+
+  - Sample available steps from a theoretical, rather than empirical, distribution.
+  - Include movement parameters in the GLM.
+  
+- Intepretation of `\(\beta\)`s is still log-RSS.
+
+- Use simulation from a fitted iSSF to estimate transient or steady-state UDs.
+
+---
+class: center, middle
+
+Recall that the `\(\beta\)`s from a fitted exponential habitat selection model can be interpreted as the log-RSS for a one-unit change in that covariate.
+
+**What if the log-RSS depends on another variable?**
+
+---
+class: center, middle
+
+# Interactions in GLMs
+
+---
+class: center, middle, inverse
+
+![Brace yourselves math is coming meme](../img/math_is_coming.jpg)
+
+---
+
+## Interactions in GLMs
+
+Let's consider a simple Gaussian GLM.
+
+`$$\mu_i = \beta_0 + \sum_{j=1}^k \beta_j x_{j,i}$$`
+
+`$$y_i \sim N(\mu_i, \sigma^2)$$`
+
+---
+
+## Interactions in GLMs
+
+Let's assume our model has 2 covariates, `\(x_1\)` and `\(x_2\)`, and we would like to include an interaction between `\(x_1\)` and `\(x_2\)` in the model. This implies that we need to estimate 3 slope parameters `\((\beta_1, \beta_2, \beta_3)\)`.
+
+`$$\mu_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3 x_{1,i} x_{2,i}$$`
+
+`$$y_i \sim N(\mu_i, \sigma^2)$$`
+
+---
+
+## Interactions in GLMs
+
+For brevity, I'm going to drop the observation subscript `\((i)\)`.
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$$`
+
+---
+
+## Interactions in GLMs
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$$`
+
+To create the interaction variable, we literally multiply `\(x_1\)` by `\(x_2\)`.
+
+This works for any covariate, including categorical covariates (which are represented by binary dummy variables).
+
+---
+
+## Parameters as functions
+
+.center[ We can think of the parameters in an interaction as linear functions of each other.] 
+
+---
+
+## Parameters as functions
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$$`
+&lt;br&gt;
+
+--
+
+$$\mu = \beta_0 + [\beta_1 x_1 + \beta_3 x_1 x_2] + \beta_2 x_2 $$
+&lt;br&gt;
+
+--
+
+`$$\mu = \beta_0 + [\beta_1 + \beta_3 x_2] x_1 + \beta_2 x_2$$`
+&lt;br&gt;
+
+---
+
+## Parameters as functions
+
+`$$\mu = \beta_0 + [\beta_1 + \beta_3 x_2] x_1 + \beta_2 x_2$$`
+&lt;br&gt;
+
+$$Let \space \beta^*_1 = \beta_1 + \beta_3 x_2 $$
+
+--
+
+$$ \Rightarrow $$
+
+`$$\mu = \beta_0 + \beta^*_1 x_1 + \beta_2 x_2$$`
+
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_3 x_2$$`
+
+---
+
+## Parameters as functions
+
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_3 x_2$$`
+
+.center[ ![Beta-star figure](figs/beta_star_1.png) ]
+
+The main effect `\((\beta_1)\)` is the intercept, and the interaction slope `\((\beta_3)\)` is the slope.
+
+---
+
+## Parameters as functions
+
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_3 x_2$$`
+
+Since the `\(\beta\)`s in our analyses can be interpreted as log-RSS, interactions allow us to define the log-RSS for a one-unit change in one variable as a *function* of another variable.
+
+---
+
+## Parameters as functions
+
+Note that this the case for either interacting variable.
+
+`$$\mu = \beta_0 + \beta^*_1 x_1 + \beta_2 x_2$$`
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_3 x_2$$`
+
+&lt;br&gt;
+.center[OR]
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta^*_2 x_2$$`
+`$$\beta^*_2 = g(x_1) = \beta_2 + \beta_3 x_1$$`
+
+
+---
+## Parameters as functions
+
+BUT NOT the case for both interacting variables.
+
+`$$\mu \neq \beta_0 + \beta^*_1 x_1 + \beta^*_2 x_2$$`
+&lt;br&gt;
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_3 x_2$$`
+`$$\beta^*_2 = g(x_1) = \beta_2 + \beta_3 x_1$$`
+
+
+---
+
+## Parameters as functions
+
+(This is true, but don't dwell on it -- it's not the point.)
+
+`$$\mu = \beta_0 + \beta^*_1 x_1 + \beta^*_2 x_2$$`
+&lt;br&gt;
+`$$\beta^*_1 = f(x_2) = \beta_1 + \frac{1}{2}\beta_3 x_2$$`
+`$$\beta^*_2 = g(x_1) = \beta_2 + \frac{1}{2}\beta_3 x_1$$`
+
+---
+
+## Interactions with a quadratic term
+
+Sometimes we want to model the relationship between `\(\mu\)` and `\(x\)` with a parabola, *e.g.*, if we are modeling habitat selection as a function of a **condition**.
+
+.center[ ![Parabola for beta-star](figs/res_cond_intxn.png) ]
+
+---
+
+## Interactions with a quadratic term
+
+It is important to remember that the location of the vertex of a parabola depends upon both the first-order and the second-order term (*we already saw this when we simulated data in the HSF module*).
+
+For a parabola of the form:
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2$$`
+
+The vertex is located at:
+
+`$$(x,y) = \left(\frac{-\beta_1}{2\beta_2}, \frac{-\beta_1^2}{4\beta_2} + \beta_0\right)$$`
+
+???
+
+Don't memorize this! What's important is that you realize that you need all of those parameters in your model.
+
+---
+
+## Interactions with a quadratic term
+
+If you want to estimate a parabola that changes with another variable, you need an interaction with both `\(x_1\)` and `\(x_1^2\)`.
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_2 + \beta_4 x_1 x_2 + \beta_5 x_1^2 x_2$$`
+
+---
+
+## Interactions with a quadratic term
+
+We can rearrange as before and see that
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_2 + \beta_4 x_1 x_2 + \beta_5 x_1^2 x_2$$`
+
+`$$= \beta_0 + \beta^*_1 x_1 + \beta^*_2 x_1^2 + \beta_3 x_2$$`
+
+&lt;br&gt;
+
+`$$\beta^*_1 = f(x_2) = \beta_1 + \beta_4 x_2$$`
+`$$\beta^*_2 = g(x_2) = \beta_2 + \beta_5 x_2$$`
+
+*I.e.*, both the linear and the quadratic parameters are linear functions of `\(x_2\)`.
+
+---
+
+## Interactions with a quadratic term
+
+This also implies that the location of the vertex (*e.g.*, the most preferred condition) is a function of `\(x_2\)`. 
+
+*E.g.*, the x-coordinate is:
+
+`$$x = \frac{-\beta^*_1}{2\beta^*_2} = -\frac{\beta_1 + \beta_4 x_2}{2(\beta_2 + \beta_5 x_2)}$$`
+
+???
+
+Don't memorize this! What's important is that you realize that you need all four of those parameters in your model.
+
+---
+
+## Interactions with a quadratic term
+
+Equivalently, we can rearrange as:
+
+`$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta^*_3 x_2$$`
+
+&lt;br&gt;
+
+`$$\beta^*_3 = h(x_1) = \beta_3 + \beta_4 x_1 + \beta_5 x_1^2$$`
+
+*I.e.*, `\(\beta^*_3\)` is a quadratic function of `\(x_1\)`.
+
+---
+class: inverse
+## Take-home messages
+
+- An interaction variable is created by multiplying together the two (or more) interacting variables.
+  - This applies to any variable, continuous or categorical.
+  
+- Interactions can be thought of as expressing the slope of one of the interacting variables as a function of the other variable.
+
+- Since our slope parameters are directly interpretable as log-RSS, interactions allow us to write the log-RSS for a variable as a function of another variable.
+
+- Interactions with a parabola should include both the linear and quadratic terms.
+
+---
+
+background-image: url(https://live.staticflickr.com/8499/8413181809_e2281239c5_c_d.jpg)
+
+???
+
+Take a short break from the math with [this picture](https://flickr.com/photos/bsmity13/8413181809/) of a baby elephant.
+
+---
+class: center, middle
+# Interactions between Habitat Variables
+
+---
+
+## Interactions between habitat variables
+
+Let's begin by considering an interaction between two habitat variables.
+
+---
+
+## Interactions between habitat variables
+
+As we've already discussed, we can classify habitat axes as resources, risks, or conditions.
+
+---
+
+### Resource-risk interaction
+
+.pull-left[ 
+*E.g.*, an animal might avoid patches with high resource density if predation risk is also high `\((\beta_{res} &gt; 0; \beta_{intxn} &lt; 0)\)`.
+
+![Resource-Risk Interaction](figs/res_risk_intxn1.png) 
+]
+
+.pull-right[ 
+*E.g.*, an animal might accept patches with high risk resource density is also high `\((\beta_{risk} &lt; 0; \beta_{intxn} &gt; 0)\)`.
+
+![Resource-Risk Interaction](figs/res_risk_intxn2.png) 
+]
+
+---
+
+### Resource-condition interaction
+
+*E.g.*, an animal might avoid foraging in places where it is too cold or too hot.
+
+.center[ ![Resource-Condition Interaction](figs/res_cond_intxn.png) ]
+
+---
+
+### Risk-condition interaction
+
+*E.g.*, an arboreal animal might be most vulnerable to predation at intermediate canopy cover.
+
+.center[ ![Risk-Condition Interaction](figs/risk_cond_intxn.png) ]
+
+---
+
+### Resource-resource interaction
+
+If resources are *perfectly substitutable*, then they combine additively in a model `\((\beta_{intxn} = 0)\)`.
+
+Two resources can be *antagonistic* if they only partially substitute each other, such that the consumer requires more total resources `\((\beta_{intxn} &lt; 0)\)`.
+
+Two resources can be *complementary* if they augment each other, such that the consumer requires fewer total resources `\((\beta_{intxn} &gt; 0)\)`.
+
+.note[See Matthiopoulos et al. 2020 for more discussion of this. Resource substitutability terms from Tilman (1980).]
+
+---
+### Resource-resource interaction
+
+.pull-left[ 
+Resource antagonism `\((\beta_{intxn} &lt; 0)\)`.  
+
+![Resource antagonism](figs/res_antag.png) 
+]
+
+.pull-right[ 
+Resource complementarity `\((\beta_{intxn} &gt; 0)\)`.  
+
+![Resource complementarity](figs/res_comp.png) 
+
+]
+
+.note[Note in both cases that the log-RSS remains positive.]
+
+---
+
+class: center, middle
+# Interactions between Movement and Habitat Variables
+
+---
+
+## Interactions between movement and habitat variables
+
+Recall that the `\(\beta\)`s for the movement parameters adjust the tentative movement distributions.
+
+--
+
+If we formulate the movement parameters as functions of habitats, that will give us a different movement distribution depending on the value of the habitat.
+
+---
+
+## Interactions between step length and habitat
+
+Assume we model step lengths as samples from this gamma distribution.
+
+`$$l_{tentative} \sim gamma(k_0 = 3, q_0 = 100)$$`
+
+.center[ ![Tentative step-length distribution](figs/tent_sl.png) ]
+
+---
+
+## Interactions between step length and habitat
+
+Recall that the selection-free step-length distribution would be:
+
+`$$l_{updated} \sim gamma(\hat{k}, \hat{q})$$`
+
+`$$\hat{k} = k_0 + \beta_{ln(l)}$$`
+
+`$$\hat{q} = 1/\left(\frac{1}{q_0} - \beta_l\right)$$`
+
+---
+
+## Interactions between step length and habitat
+
+Now say that our iSSF includes an interaction between the `\(\beta\)`s and a habitat variable, `\(x\)`.
+
+`$$logit(p) = \beta_0 + \beta_1 x + \beta_2 l + \beta_3 ln(l) + \beta_4 x l + \beta_5 x ln(l)$$`
+
+R formula: 
+
+
+```r
+case_ ~ sl_ * x + log_sl_ * x
+```
+
+---
+
+## Interactions between step length and habitat
+
+As before, we can rearrange to write the `\(\beta\)`s for `\(l\)` and `\(ln(l)\)` as functions of `\(x\)`.
+
+`$$logit(p) = \beta_0 + \beta_1 x + \beta_2 l + \beta_3 ln(l) + \beta_4 x l + \beta_5 x ln(l)$$`
+
+`$$logit(p) = \beta_0 + \beta_1 x + \beta^*_l l + \beta^*_{ln(l)} ln(l)$$`
+
+`$$\beta^*_l = \beta_2 + \beta_4(x)$$`
+
+`$$\beta^*_{ln(l)} = \beta_3 + \beta_5(x)$$`
+
+---
+
+## Interactions between step length and habitat
+
+That implies that our gamma distribution is now a function of `\(x\)`.
+
+`$$l_{updated} \sim gamma(\hat{k}, \hat{q})$$`
+
+`$$\hat{k} = k_0 + \beta^*_{ln(l)}$$`
+
+`$$\hat{q} = 1/\left(\frac{1}{q_0} - \beta^*_l\right)$$`
+
+`$$\beta^*_l = \beta_2 + \beta_4(x)$$`
+
+`$$\beta^*_{ln(l)} = \beta_3 + \beta_5(x)$$`
+
+---
+
+## Interactions between step length and habitat
+
+.center[ What does this look like with some numbers? ]
+
+---
+
+## Interactions between step length and habitat
+
+### Continuous habitat
+
+Say our `\(x\)` represents vegetation density, and denser vegetation makes it harder for our animal to move quickly.
+
+.center[ ![Continuous habitat step-length distr](figs/updated_sl_cont.png) ]
+
+---
+
+## Interactions between step length and habitat
+
+### Categorical habitat
+
+Say our `\(x\)` represents habitat types, and our animal moves fastest in grassland, slowest in wetland, and intermediate in forest.
+
+.center[ ![Categorical habitat step-length distr](figs/updated_sl_cat.png) ]
+
+---
+
+## Interactions between turn angle and habitat
+
+We can do the same thing with the concentration parameter of the von Mises distribution.
+
+*E.g.*, foraging animals (at the right timescale) typically have turn angles concentrated around `\(\pm \pi\)`, whereas traveling animals typically have turn angles concentrated around 0.
+
+.center[ ![Continuous habitat turn angle distr](figs/updated_ta_cont.png) ]
+
+---
+class: center, middle
+# Interactions between Movement Variables
+
+---
+
+## Interactions between movement variables
+
+It is plausible to think that step length and turn angle might be correlated.
+
+A travelling animal might be moving fast (long step lengths) and turning very little (turn angle concentrated around 0).
+
+A foraging animal might be moving slowly (short step lengths) and turning quite a lot (turn angle concentrated around `\(\pm \pi\)`).
+---
+
+## Interactions between movement variables
+
+An interaction between step length and turn angle can capture this correlation.
+
+.center[ ![Turn angle by step length](figs/updated_ta_sl.png) ]
+---
+
+class: center, middle
+# Interactions with Other Variables
+
+---
+
+## Interactions with other variables
+
+You may have other hypotheses about how some factor affects habitat selection and/or movement.
+
+---
+
+## Interactions with temporal variables
+
+Perhaps your animal is primarily nocturnal. Maybe they have long movements during the night and short movements during the day.
+
+Include an interaction between step length (and maybe log step length) and time-of-day.
+
+---
+
+## Interactions with temporal variables
+
+Perhaps your animal is primarily nocturnal. Maybe they like to sleep in forests during the day, but they forage in grasslands at night.
+
+Include an interaction between habitat type and time-of-day.
+
+---
+
+## Interactions with temporal variables
+
+Temporal interactions can be at a coarser scale, too.
+
+For example, maybe you are studying a game species and comparing movement patterns during hunting and non-hunting seasons.
+
+---
+
+## Interactions with behavioral state
+
+Maybe you've already segmented your trajectory using an HMM. By definition, your step-length and turn-angle distributions should vary with state.
+
+Include an interaction between behavioral state and the movement parameters.
+
+---
+
+## Interactions with behavioral state
+
+Maybe you've already segmented your trajectory using an HMM. Your animal might use habitat differently depending on whether they are resting, foraging, or travelling.
+
+Include an interaction between behavioral state and the habitat parameters.
+
+---
+class: inverse
+## Take-home messages
+
+- Interactions can capture complex biological realism in a habitat selection model.
+
+- Give careful thought to the form of interactions to understand what they mean biologically.
+
+- Remember that the `\(\beta\)`s for habitats represent selection strength and the `\(\beta\)`s for movement represent adjustments to the tentative movement distribution.
+
+  - If you hypothesize that selection or movement is a function of some covariate, you can include it as an interaction.
+
+---
+class: center, middle
+# Case Studies
+
+---
+
+## Dickie et al. 2020
+
+.center[ ![Dickie et al. Title Page](figs/dickie_etal_title.png) ]
+
+---
+
+## Dickie et al. 2020
+
+.center[ &lt;img src="figs/dickie_etal_fig1.png" width = 70% height = 70% alt = "Dickie et al. Fig 1"&gt; ]
+
+---
+
+## Dickie et al. 2020
+
+.center[ &lt;img src="figs/dickie_etal_fig1.png" width = 40% height = 40% alt = "Dickie et al. Fig 1"&gt; 
+
+Interaction between habitat type and movement parameters.
+]
+
+---
+## Roberts et al. 2021
+
+.center[ ![Roberts et al. Title Page](figs/roberts_etal_title.png) ]
+
+---
+
+## Roberts et al. 2021
+
+.center[ &lt;img src="figs/roberts_etal_fig1.png" width = 70% height = 70% alt = "Roberts et al. Fig 1"&gt; ]
+
+???
+
+We were interested in whether or not sea turtles select for marine protected areas, and whether or not that selection depended on their movement mode.
+
+We segmented our trajectories into movement modes using a Bayesian state-space model designed for use with Argos data. (see R package [bsam](https://github.com/ianjonsen/bsam).)
+
+---
+
+## Roberts et al. 2021
+
+.center[ &lt;img src="figs/roberts_etal_fig2.png" width = 50% height = 50% alt = "Roberts et al. Fig 2"&gt; ]
+
+???
+
+We found that turtles selected multi-use protected areas over unprotected areas in both movement modes.
+
+We found little support for selection of stricter no-take zones, probably because the no-take zones were very rare in the study system, and perhaps because turtles cannot perceive the differences between multi-use and no-take zones.
+
+---
+
+## Roberts et al. 2021
+
+.center[ &lt;img src="figs/roberts_etal_fig2.png" width = 30% height = 30% alt = "Roberts et al. Fig 2"&gt; 
+
+Interaction between habitat (protected status) and behavioral state.
+]
+
+
+
+???
+
+We determined behavioral states using a Bayesian state space model. It is similar to an HMM but (1) handles temporally irregular data and (2) handles Argos error distributions.
+
+Note we also had interactions between behavioral state and the movement parameters.
+
+---
+
+## Picardi et al. 2021
+
+.center[ ![Picardi et al. Title Page](figs/picardi_etal_title.png) ]
+
+---
+
+## Picardi et al. 2021
+
+.center[ ![Picardi et al. Title Page](figs/picardi_etal_title.png) ]
+
+???
+
+Picardi et al. were interested in how habitat selection changes as translocated animals adjust to their new surroundings.
+
+They used an HMM to segment
+
+---
+
+## Picardi et al. 2021
+
+.center[ &lt;img src="figs/picardi_etal_ga.png" width = 70% height = 70% alt = "Picardi et al. Graphical Abstract"&gt; ]
+
+---
+
+## Picardi et al. 2021
+
+.center[ &lt;img src="figs/picardi_etal_fig5.png" width = 75% height = 75% alt = "Picardi et al. Fig 5"&gt; ]
+
+---
+
+## Picardi et al. 2021
+
+.center[ &lt;img src="figs/picardi_etal_fig5.png" width = 40% height = 40% alt = "Picardi et al. Fig 5"&gt; 
+
+(Effectively) interaction between habitat, behavioral state, and reproductive status.
+]
+
+???
+
+Note that Picardi et al. did not actually fit a model with interaction terms, but rather fit individual models and then summarized habitat selection parameters by behavioral state and reproductive state post hoc.
+
+Conceptually, the two approaches are similar. The two-stage approach is easier to fit and less likely to lead to convergence issues than using interaction terms to fit the model.
+
+---
+class: inverse
+## Take-home messages
+
+- Recently published studies are beginning to leverage the power of interactions in iSSA to answer complex ecological questions.
+
+---
+class: center, middle
+# Questions?
+
+---
+class: small-font
+# References
+
+
+&lt;a name=bib-Dickie2020&gt;&lt;/a&gt;[Dickie, M., S. R. McNay, G. D. Sutherland,
+et al.](#cite-Dickie2020) (2020). "Corridors or risk? Movement along,
+and use of, linear features varies predictably among large mammal
+predator and prey species". In: _Journal of Animal Ecology_ 89.2. Ed.
+by A. Loison, pp. 623-634. DOI:
+[10.1111/1365-2656.13130](https://doi.org/10.1111%2F1365-2656.13130).
+
+&lt;a name=bib-Fieberg2021&gt;&lt;/a&gt;[Fieberg, J., J. Signer, B. Smith, et
+al.](#cite-Fieberg2021) (2021). "A 'How to' guide for interpreting
+parameters in habitat-selection analyses". In: _Journal of Animal
+Ecology_ 90.5, pp. 1027-1043. DOI:
+[10.1111/1365-2656.13441](https://doi.org/10.1111%2F1365-2656.13441).
+
+&lt;a name=bib-Matthiopoulos2020&gt;&lt;/a&gt;[Matthiopoulos, J., J. Fieberg, and
+G. Aarts](#cite-Matthiopoulos2020) (2020). _Species-Habitat
+Associations: Spatial data, predictive models, and ecological
+insights_. 1st ed. University of Minnesota Libraries Publishing. ISBN:
+978-1-946135-68-1. DOI:
+[10.24926/2020.081320](https://doi.org/10.24926%2F2020.081320).
+
+&lt;a name=bib-Picardi2021&gt;&lt;/a&gt;[Picardi, S., P. Coates, J. Kolar, et
+al.](#cite-Picardi2021) (2021). "Behavioural state-dependent habitat
+selection and implications for animal translocations". In: _Journal of
+Applied Ecology_, pp. 1-12. DOI:
+[10.1111/1365-2664.14080](https://doi.org/10.1111%2F1365-2664.14080).
+
+&lt;a name=bib-Roberts2021&gt;&lt;/a&gt;[Roberts, K. E., B. J. Smith, D.
+Burkholder, et al.](#cite-Roberts2021) (2021). "Evaluating the use of
+marine protected areas by endangered species: A habitat selection
+approach". In: _Ecological Solutions and Evidence_ 2.1, p. e12035. DOI:
+[10.1002/2688-8319.12035](https://doi.org/10.1002%2F2688-8319.12035).
+
+&lt;a name=bib-Tilman1980&gt;&lt;/a&gt;[Tilman, D.](#cite-Tilman1980) (1980).
+"Resources: A Graphical-Mechanistic Approach to Competition and
+Predation". In: _The American Naturalist_ 116.3, pp. 362-393.
+
+&lt;br&gt;
+
+.note[ See also Fieberg et al. 2021 [Appendix B](https://conservancy.umn.edu/bitstream/handle/11299/218272/AppB_SSF_examples.html) for coded iSSF examples and [Appendix C](https://conservancy.umn.edu/bitstream/handle/11299/218272/AppC_iSSA_movement.html) for formulas for updating tentative movement distributions. ]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
