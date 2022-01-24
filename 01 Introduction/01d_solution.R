@@ -20,6 +20,7 @@ tz(dat$timestamp) <- "GMT"
 
 # In case you use read.csv, you will have to parse the date first
 dat <- read.csv("data/elephants.csv")
+dat
 head(dat)
 str(dat)
 dat$timestamp <- ymd_hms(dat$timestamp, tz = "GMT")
@@ -84,7 +85,8 @@ ggplot(trk3, aes(temperature, speed)) +
 # Add a new column to the data set that indicates the months of the year when each relocation was taken. Does the association between speed and temperature remains the same for each month? Explore this graphically and calculate monthly means and median for speeds.
 
 
-trk4 <- mutate(trk3, month = month(t_, label = TRUE, locale = "en_US.UTF-8")) 
+trk4 <- mutate(trk3, month = month(t_, label = TRUE, locale = "en_US.UTF-8")) # note you can remove the lcoale
+mutate(trk3, month = month(t_, label = TRUE)) %>% pull(month)
 
 ggplot(trk4, aes(temperature, speed)) +
   geom_point(alpha = 0.05) +

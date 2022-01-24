@@ -20,15 +20,19 @@ dat <- amt_fisher
 # Create a nested `data.frame` by nesting by individual ID (or burst, if you 
 # have separate bursts in your data).
 nd <- dat %>% 
-  select(id, name, sex, everything()) %>% 
+  dplyr::select(id, name, sex, everything()) %>% 
   nest(track = x_:t_)
+
+# You don't need to keep all 3 id columns. For example, this is fine:
+dat %>% 
+  nest(track = -id)
 
 # Part 3 ----  
 # Fit a home range of your choice for each individual (feel free to fit more 
 # than one home range type). Fit at least two isopleths per home range, *e.g.*, 
 # 95% and 50%. 
 nd <- nd %>% 
-  mutate(mcp = map(track, hr_mcp, levels = c(0.5, 0.95)),
+  mutate(mcp = lapply(track, hr_mcp, levels = c(0.5, 0.95)),
          locoh = map(track, hr_locoh, n = 11, levels = seq(0.25, 1, by = 0.25)),
          kde = map(track, hr_kde, levels = c(0.5, 0.95)))
  
@@ -60,7 +64,27 @@ get_area <- function(l, level) {
          kde50 = get_area(kde_area, 0.5)) %>% 
   select(id:sex, mcp95:kde50) %>% 
   mutate(across(mcp95:kde50, units::set_units, "km^2")))
-  
+
+# Here's a solution from Christina Aiello
+a_mcp <- map_df(nd$mcp, hr_area, units = TRUE)
+
+# To add the names back, you can tweak this solution to this:
+# Return a list rather than a single data.frame
+a_mcp <- map(nd$mcp, hr_area, units = TRUE)
+# Give the list elements names
+names(a_mcp) <- nd$id
+# Add the argument '.id' to 'bind_rows()' to keep the list element names as
+# a new column
+bind_rows(a_mcp, .id = "ID")
+
+# Here's another solution with unnest.
+a <-  nd %>% 
+  mutate(mcp_area = map(mcp, hr_area, units = TRUE))
+
+a %>% 
+  dplyr::select(id, mcp_area) %>% 
+  unnest(cols = mcp_area)
+
 
 # Part 5 ---- 
 # Make a map with each individual's home range. It's up to you whether you 
@@ -106,3 +130,20 @@ plots <- lapply(poly$name, function(nm) {
   print(g)
   return(g)
 })
+
+
+# Here's a simpler solution.
+nd %>% 
+  pull(mcp) %>% 
+  map(plot)
+
+# Here's an intermediate solution
+nd %>% 
+  pull(mcp) %>% 
+  map(function(x) {
+    hr_isopleths(x) %>% 
+      ggplot() +
+      geom_sf(aes(color = factor(level)), size = 1, fill = NA) +
+      theme_bw()
+  })
+  

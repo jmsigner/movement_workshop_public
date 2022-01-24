@@ -17,7 +17,7 @@ library(amt)
 # we will define.
 
 # Source function for BCRW
-source("../fun/bcrw.R")
+source("fun/bcrw.R")
 
 # We'll generate data for 4 different individuals in the Bear River mountains 
 # just east of Logan, UT. We'll assume our spatial coordinates are in 
