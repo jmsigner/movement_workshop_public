@@ -1,0 +1,34 @@
+---
+title: "Introduction Exercise"
+author: "Johannes Signer"
+date: "24 January 2022"
+output: 
+  html_document:
+    theme: default
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Let's apply what we've learned about exploratory data analysis. Refer to the lecture slides (`01a_lecture.pdf`) and the walkthrough code (`01b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use example data set of collard elephants, that was published by Wall et al. 2014 [here](https://www.datarepository.movebank.org/handle/10255/move.372). We already downloaded the data and stored in `data/elephants.csv`. 
+
+
+## Instructions
+
+1. Read the data set `data/elephants.csv` (note file paths always start globally). Create a track using, make sure that you set the CRS to 4326. Ensure that the timezone is "GMT". 
+
+2. Transform the track to a projected UTM CRS. You can use 32630 (https://epsg.io/32630) and filter only for the individual `"Salif Keita"`. Only use data for the year 2009. What is is the sampling rate?
+
+3. Calculate the speed (i.e., the distance per unit time) for each relocation (*hint, there is a function called `speed` in `amt`, that behaves like `step_length()`), and the time of the day for each relocation. 
+
+4. Does speed differ between time of day and for different temperatures?
+
+5. Add a new column to the data set that indicates the months of the year when each relocation was taken. Does the association between speed and temperature remains the same for each month? Explore this graphically and calculate monthly means and median for speeds.

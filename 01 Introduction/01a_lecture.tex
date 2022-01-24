@@ -1,0 +1,1430 @@
+\documentclass[ignorenonframetext,,t]{beamer}
+
+\usepackage{listings}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\setbeamerfont{caption}{size=\tiny, shape=\itshape}
+\beamertemplatenavigationsymbolsempty
+
+
+  \usepackage{lmodern}
+
+
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}
+
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+\fi
+
+\defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+
+
+
+
+
+
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Font sizes
+%\usefonttheme[stillsansseriflarge]{serif}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamerfont{title}{series=\bfseries,size=\Large}
+\setbeamerfont{subtitle}{size=\small}
+
+
+% Color
+\usepackage{color}
+\definecolor{spamwell}{RGB}{0,126,63}
+\setbeamercolor{frametitle}{fg=spamwell,bg=spamwell!20}
+\setbeamercolor{title}{fg=spamwell,bg=spamwell!20}
+\setbeamercolor{structure}{fg=spamwell}
+\setbeamercolor{alerted text}{fg=spamwell}
+%\setbeamercolor{bibliography entry author}{fg=red!20}
+
+\hypersetup{
+  colorlinks,
+  allcolors=spamwell!80}
+
+% Title graphic
+\titlegraphic{\includegraphics[width=2cm]{/home/jsigner/ownCloud/img/logo-uni}\hspace{1cm}\includegraphics[width=2cm]{/home/jsigner/ownCloud/img/logo-abteilung}}
+
+% Itemize list
+\setbeamertemplate{itemize items}[circle]
+
+\let\oldtextbf\textbf
+\renewcommand{\textbf}[1]{\textcolor{spamwell}{\oldtextbf{#1}}}
+
+
+\usepackage{pgf}
+
+% Booktabs
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+
+% Section
+
+
+% Footline
+\setbeamercolor{footlinecolor}{fg=spamwell, bg=spamwell!20}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[sep=1em,wd=\paperwidth,leftskip=0.2cm,rightskip=0.2cm]{footlinecolor}
+    \hspace{0.01cm}%
+    %Johannes Signer (jsigner@gwdg.de)\hfill\insertframenumber/\inserttotalframenumber
+    Johannes Signer (jsigner@uni-goettingen.de)\hfill\insertframenumber
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{navigation symbols}{}
+
+% Verbatim
+\usepackage{xcolor, url}
+\definecolor{dark-gray}{gray}{0.30}
+\makeatletter
+\renewcommand\verbatim@font{\footnotesize\color{dark-gray}\normalfont\ttfamily}
+\makeatletter
+
+% tight list
+
+\providecommand{\tightlist}{%
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+\usepackage{copyrightbox}
+
+\newif\ifbibliography
+
+
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+
+
+
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+\AtBeginPart{
+\let\insertpartnumber\relax
+\let\partname\relax
+\frame{\partpage}
+}
+
+% Thanks to http://tex.stackexchange.com/questions/178800/creating-sections-each-with-title-pages-in-beamers-slides
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=false]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+%  \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+
+\AtBeginSubsection{
+\let\insertsubsectionnumber\relax
+\let\subsectionname\relax
+\frame{\subsectionpage}
+}
+
+
+% Block titles
+
+%\setbeamertemplate{blocktitle}{%
+%    \usebeamerfont{blocktitle}\insertblocktitle%
+%    \vphantom{g}% To avoid fluctuations per frame
+%    %\hrule% Uncomment to see desired effect, without a full-width hrule
+%    \makebox[\linewidth][l]{\rule{\paperwidth}{0.4pt}}%
+%}
+% https://tex.stackexchange.com/questions/524621/customize-beamer-block-environment-underline-block-title
+\addtobeamertemplate{block begin}{%
+    \let\oldinsertblocktitle\insertblocktitle%
+    \def\insertblocktitle{\underline{\oldinsertblocktitle}}%
+}{}
+
+
+
+
+
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\setcounter{secnumdepth}{0}
+
+
+%  itemsep for lists: https://stackoverflow.com/questions/58318568/how-to-increase-distance-between-bullet-points-in-r-markdown
+\renewcommand{\tightlist}{\setlength{\itemsep}{1.4ex}\setlength{\parskip}{0pt}}
+
+
+% footnotesize
+\setbeamerfont{footnote}{size=\tiny}
+
+% title
+\title{Introduction}
+
+
+\author{Johannes Signer \& Brian Smith}
+
+
+\date{January 2022}
+
+\begin{document}
+\frame{\titlepage}
+
+
+
+\begin{frame}{Welcome!}
+\protect\hypertarget{welcome}{}
+\begin{itemize}
+\tightlist
+\item
+  Welcome to this online course on animal movement.
+\item
+  We are Brian and Johannes.
+\item
+  Who are you?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Outline of the course}
+\protect\hypertarget{outline-of-the-course}{}
+\begin{block}{Day 1:}
+\protect\hypertarget{day-1}{}
+\begin{itemize}
+\tightlist
+\item
+  Introduction and exploratory data analysis for movement data (J)
+\item
+  Quantifying space use of animals with home ranges (B)
+\end{itemize}
+\end{block}
+
+\begin{block}{Day 2:}
+\protect\hypertarget{day-2}{}
+\begin{itemize}
+\tightlist
+\item
+  Continuous time movement models (B)
+\item
+  Identifying different behavioral states in movement data (J)
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Day 3:}
+\protect\hypertarget{day-3}{}
+\begin{itemize}
+\tightlist
+\item
+  Introduction to habitat selection (B)
+\item
+  Integrated step selection functions 1 (J)
+\end{itemize}
+\end{block}
+
+\begin{block}{Day 4:}
+\protect\hypertarget{day-4}{}
+\begin{itemize}
+\tightlist
+\item
+  Simulations from fitted iSSF (J)
+\item
+  Integrated step selection functions 2 (B)
+\end{itemize}
+\end{block}
+
+\begin{block}{Day 5:}
+\protect\hypertarget{day-5}{}
+\begin{itemize}
+\tightlist
+\item
+  Strategies to model multiple animals (J)
+\item
+  Validation of models for habitat selection (B)
+\item
+  Time to discuss questions related to \textbf{your} projects.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Some logistics}
+\protect\hypertarget{some-logistics}{}
+\begin{itemize}
+\item
+  The course is scheduled from Monday (24th of Jan) to Friday (28th of
+  Jan) from 2pm to 8pm Berlin time (that is UTC+2).
+\item
+  We split these 6h block into two chunks:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    2pm - 4:45 pm and 5:15 pm to 8pm
+  \item
+    Each chunk will consists of
+
+    \begin{itemize}
+    \tightlist
+    \item
+      a short lecture
+    \item
+      an R walkthrough
+    \item
+      an exercise
+    \item
+      discussion of the exercise
+    \end{itemize}
+  \end{itemize}
+\item
+  Lectures will be held via zoom.
+\item
+  During the whole workshop we have a slack channel where you ask
+  questions (we will monitor the channel during the course, feel free to
+  ask questions there also outside the course houres).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Analysis of movement data in R}
+\protect\hypertarget{analysis-of-movement-data-in-r}{}
+\begin{itemize}
+\item
+  The statistical software package R has become a widely used tool for
+  data analysis in ecology and evolution and also in movement ecology.
+\item
+  A typical analysis usually undergoes a few steps (all of which can be
+  performed in R), this was reviewed by
+  \href{https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/1365-2656.13116}{Joo
+  et al.~2020}.
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/home/jsigner/git/movement_workshop/01 Introduction/img/joo2020} 
+
+}
+
+\caption{Figure from Joo et al 2020}\label{fig:unnamed-chunk-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{Packages that we will use}
+\protect\hypertarget{packages-that-we-will-use}{}
+\begin{itemize}
+\tightlist
+\item
+  \texttt{amt}
+\item
+  \texttt{ctmm}
+\item
+  \texttt{crawl}
+\item
+  \texttt{moveHMM}
+\item
+  \ldots{}
+\end{itemize}
+
+See also \texttt{required\_packages.R} for a list of all packages that
+we need and to get the latest version of all packages.
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Some conventions in R}
+\protect\hypertarget{some-conventions-in-r}{}
+\begin{itemize}
+\tightlist
+\item
+  \texttt{\%\textgreater{}\%} or \texttt{\textbar{}\textgreater{}}:
+  Pipes the output of one function to a next function. We will discuss
+  this further later on.
+\item
+  \texttt{::} to access a name space form a package.
+\item
+  use of `a`.
+\item
+  \texttt{.} means this directory
+\item
+  \texttt{..} refers to the parent directory
+\item
+  \texttt{data.frame} or \texttt{tibble}?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\tightlist
+\item
+  We often use \texttt{here::here("path\ to\ a\ file")}, when reading in
+  a file.
+\item
+  The first \texttt{here} calls the function \texttt{here()} from the
+  package \texttt{here}.
+\item
+  The function \texttt{here()} dynamically creates the absolute path to
+  the project root.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{here}\SpecialCharTok{::}\FunctionTok{here}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "/home/jsigner/git/movement_workshop"
+\end{verbatim}
+
+This means, that we save all our data in the root directory data (even
+though my scripts are in different sub directories).
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{Brackets (\texttt{(}, \texttt{{[}}, \texttt{\{})}
+\protect\hypertarget{brackets}{}
+\begin{itemize}
+\tightlist
+\item
+  round brackets or parentheses (\texttt{(}) usually indicate functions
+  or are used in arithmetic calculations.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sqrt}\NormalTok{(}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 1.732051
+\end{verbatim}
+
+or
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DecValTok{2} \SpecialCharTok{*}\NormalTok{ (}\DecValTok{3} \SpecialCharTok{+} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 8
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\tightlist
+\item
+  square brackets (\texttt{{[}}, \texttt{{[}{[}}) are used to subset
+  data structures.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{letters[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "a" "b" "c"
+\end{verbatim}
+
+or
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(iris[[}\StringTok{"Species"}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] setosa setosa setosa setosa setosa setosa
+Levels: setosa versicolor virginica
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\tightlist
+\item
+  curly brackets or braces (\texttt{\{}) are used to form code blocks
+  (e.g., inside a function or control structure).
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{) \{}
+\NormalTok{  i}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{\} }
+\end{Highlighting}
+\end{Shaded}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{Functions}
+\protect\hypertarget{functions}{}
+\begin{itemize}
+\tightlist
+\item
+  Functions \emph{do} something. For example function \texttt{sqrt()}
+  takes the square root for a number.
+\item
+  It is easy to recognize functions, because they usually have a name
+  (e.g., \texttt{sqrt}) followed by round brackets \texttt{()}.
+\item
+  Within these round brackets arguments are passed to a function. This
+  arguments can be named or unnamed (as long as they are in the correct
+  order).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Recommended setup}
+\protect\hypertarget{recommended-setup}{}
+\begin{itemize}
+\item
+  We would recommend to download the whole repository from GitHub (@TODO
+  Link)\footnote<.->{If you are familiar with git, feel free to clone
+    the repository}.
+\item
+  Then use the RStudio project (together with RStudio).
+\item
+  Following these guides, you should have all paths correct.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Geographic data in brief}
+\protect\hypertarget{geographic-data-in-brief}{}
+\begin{itemize}
+\item
+  Movement data is inherently spatial.
+\item
+  Thus we will have to deal with tools to work with spatial data (R has
+  a rich set of tools to deal with spatial data;
+  e.g.~\url{https://geocompr.robinlovelace.net/}).
+\item
+  We will work frequently with raster data (spatial covariates) and
+  possibly with vector data (i.e., home ranges).
+\item
+  One of the challenges is to ensure that both -- tracking data and
+  covariates -- have a matching coordinate reference system (CRS).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\tightlist
+\item
+  The CRS defines the reference system that is being used to explicitly
+  reference a feature in space.
+\item
+  There are two classes of CRS: \textbf{geographic} (e.g., WGS84) and
+  \textbf{projected} (e.g., UTM) CRS.
+\item
+  Project CRS flatten the three dimensional data to the a
+  two-dimensional plane (and introduce some distortion). \pause
+\item
+  CRS are often referred to with their EPSG\footnote<.->{EPSG stands for
+    European Petrol Survey Group, who came up with the system.} code.
+\item
+  EPSG codes are four to five digits number that refer to different CRS.
+  See for example www.epsg.io. \pause
+\item
+  Which CRS is best to use? It depends on the range of the study
+  species. I usually prefer projected CRS, because their units are
+  meters and not degrees.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Take-home messages 1}
+\protect\hypertarget{take-home-messages-1}{}
+\begin{enumerate}
+\tightlist
+\item
+  Do not get confused by \texttt{::}, this is just explicitly calls a
+  function from a package.
+\item
+  Consider using RStudio projects to have everything in one place.
+  \pause
+\item
+  Coordinate reference system (CRS) are used to describe where our
+  animals are.
+\item
+  EPSG-Codes can be used to refer to CRS.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Your turn 1}
+\protect\hypertarget{your-turn-1}{}
+What does the following R code do
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{a[}\DecValTok{8}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\tightlist
+\item
+  It calls a function \texttt{a} with the argument \texttt{8}?
+\item
+  It returns the 8th element of a vector called \texttt{a}?
+\item
+  It returns the 8th element of a data frame called \texttt{a}?
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Data}
+\protect\hypertarget{data}{}
+\begin{block}{Movement data}
+\protect\hypertarget{movement-data}{}
+\begin{itemize}
+\tightlist
+\item
+  Often times the data we receive is just a time series of coordinates
+  (longitude, latitude and time stamp).
+\item
+  Depending on the sensors we use, other (meta) information may also be
+  stored (this could include temperature, coordinates in a different
+  {[}projected{]} CRS, \ldots).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Environmental covariates}
+\protect\hypertarget{environmental-covariates}{}
+\begin{itemize}
+\tightlist
+\item
+  Vector layers (e.g., road networks, rivers, protected areas)
+\item
+  Raster layers (e.g., land use, remotely sensed data such as NDVI,
+  climatic variables. )
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Tracks and bursts: the basic building block}
+\protect\hypertarget{tracks-and-bursts-the-basic-building-block}{}
+\begin{itemize}
+\item
+  For movement data, we usually read a text file into R (\texttt{.csv},
+  \texttt{.txt}, \ldots) as a data frame and then create a
+  analysis-specific object.
+\item
+  When working with the \texttt{amt} package the function
+  \texttt{make\_track()} takes a sequence of coordinates (with or
+  without timestamps) and creates a track. Note, at this point multiple
+  individuals can be mixed and sampling rates can be heterogeneous.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Bursts} can be created from tracks.
+\item
+  A burst is a sequence of (re)locations from the \textbf{same}
+  individual at \textbf{equal} time intervals (with some tolerance).
+\item
+  Options to change from tracks to bursts are:
+
+  \begin{enumerate}
+  \tightlist
+  \item
+    Use the function \texttt{amt::track\_resample()}.
+  \item
+    Use a continuous time movement model (module 3).
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Detecting outliers}
+\protect\hypertarget{detecting-outliers}{}
+\begin{itemize}
+\tightlist
+\item
+  Before resampling data, it is a good idea to check for outliers and
+  remove erroneous locations.
+\item
+  Location error is the difference between the recorded location an the
+  animal's true location (Bjorneraas et al.~2010).
+\item
+  This includes locations that are obviously outside the study area.
+\item
+  One measure of accuracy for GPS data is the DOP (Dilution of
+  Precision). Lower values are better.
+\item
+  See Bjorneraas et al.~2010 for more sophisticated approach.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Sampling rates, and resampling}
+\protect\hypertarget{sampling-rates-and-resampling}{}
+\begin{itemize}
+\tightlist
+\item
+  The function \texttt{summarize\_sampling\_rate()} takes an track as
+  input and gives a summary of the sampling rate.
+\item
+  If there are multiple animals present, there is also the function
+  \texttt{summarize\_sampling\_rate\_many()}, which will do the same
+  thing, but for many animals.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{itemize}
+\tightlist
+\item
+  Once a suitable sampling rate is determined, the function
+  \texttt{track\_resample()} can be used to take a relocation every
+  predefined time interval (e.g., 30 minutes, 2 hours, \ldots) within a
+  tolerance.
+\item
+  The result of \texttt{track\_resample()} is again a track with one
+  additional column called \texttt{burst\_}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Take-home messages}
+\protect\hypertarget{take-home-messages}{}
+\begin{itemize}
+\tightlist
+\item
+  Movement data are often `just' text files.
+\item
+  The \texttt{amt} package uses tracks as the basic building block.
+\item
+  A burst is a track (or a part of a track) with a regular sampling
+  rate.
+\item
+  Use \texttt{track\_resample()} create tracks with equal sampling
+  rates.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Your turn}
+\protect\hypertarget{your-turn}{}
+You tracked a red fox and want to calculate average step length, why is
+it important to have a regular sampling rate?
+
+\begin{enumerate}
+\tightlist
+\item
+  It does not matter.
+\item
+  We can not assume that the step length is independent of the sampling
+  rate.
+\item
+  Shorter sampling rates will lead to shorter steps.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Movement characteristics (\texttt{sl\_}, \texttt{ta\_})}
+\protect\hypertarget{movement-characteristics-sl_-ta_}{}
+Tracks are still \emph{just} the points as they were collected. If we
+want to get insights, we have can look at different characteristics of
+steps (i.e., two consecutive relocations).
+
+This include:
+
+\begin{itemize}
+\tightlist
+\item
+  step length
+\item
+  turn angle
+\item
+  speed
+\item
+  Net squared displacement
+\end{itemize}
+
+Note, unless you take care of different instances or bursts, they are
+ignored.
+\end{frame}
+
+\begin{frame}[fragile]{Net Squared displacement (NSD)}
+\protect\hypertarget{net-squared-displacement-nsd}{}
+\begin{itemize}
+\tightlist
+\item
+  The NSD is the squared distance between the first relocation of a
+  track and the every relocation that follows.
+\item
+  Bunnefeld et al.~2011 described different forms of the NSD that
+  resemble different migratory behaviors.
+\item
+  The different models can fit to the data (e.g., using nonlinear least
+  square with the function \texttt{nls()} in R).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+
+{\centering \includegraphics[width=0.6\linewidth]{img/nsd} 
+
+}
+
+\caption{Figure taken from Bunnefeld et al. 2011}\label{fig:unnamed-chunk-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Time of the day}
+\protect\hypertarget{time-of-the-day}{}
+\begin{itemize}
+\tightlist
+\item
+  Time of day can be annotated to steps with the function
+  \texttt{amt::time\_of\_day()}. This will add an additional column to
+  the data frame of steps \texttt{tod\_end} or \texttt{tod\_start}
+  depending on the argument \texttt{when}.
+\item
+  If the data is of sufficient temporal resolution, it is also possible
+  to annotate twilight (dawn and dusk).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Steps}
+\protect\hypertarget{steps}{}
+We can start to create a \texttt{steps}-representation.
+
+\begin{center}\includegraphics[width=0.5\linewidth]{/home/jsigner/git/movement_workshop/01 Introduction/img/steps} \end{center}
+
+This can be achieved with the function \texttt{amt::steps()}. If we
+resampled the data previously, we can even use
+\texttt{amt::steps\_by\_burst()}.
+\end{frame}
+
+\begin{frame}
+This automatically calculates several step attributes:
+
+\begin{itemize}
+\tightlist
+\item
+  Start and end point
+\item
+  Step length
+\item
+  Absolute and relative turn angles
+\item
+  Duration
+\end{itemize}
+
+This allows already calculate some step characteristics. It becomes even
+more informative, if we pair this for example with the whether a step
+was in the night, day or twilight.
+\end{frame}
+
+\begin{frame}{Example}
+\protect\hypertarget{example}{}
+Remington Moll observed a (rare) long distance dispersal for White Tail
+deer\footnote<.->{Moll et. al Ecology and Evolution;
+  \url{https://onlinelibrary.wiley.com/doi/full/10.1002/ece3.7354}.} and
+looked at the turn angle and step distribution for day and night.
+
+\begin{center}\includegraphics[width=0.85\linewidth]{img/moll3_part} \end{center}
+\end{frame}
+
+\begin{frame}{Take-home message}
+\protect\hypertarget{take-home-message}{}
+\begin{enumerate}
+\tightlist
+\item
+  Movement characteristics (e.g., step length or turn angle) are
+  fundamental to many analyses in discrete time.
+\item
+  We often compare movement characteristics for different times of day.
+\item
+  The Net Squared Displacement (NSD) can be used to infer different
+  migratory modes.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Your turn}
+\protect\hypertarget{your-turn-2}{}
+How would you interpret the following figure of a step-length
+distribution?
+
+\begin{center}\includegraphics[width=0.85\linewidth]{01a_lecture_files/figure-beamer/unnamed-chunk-12-1} \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Dealing with multiple animals}
+\protect\hypertarget{dealing-with-multiple-animals}{}
+\begin{itemize}
+\tightlist
+\item
+  Most telemetry studies deal with more than one animal.
+\item
+  Dealing with multiple animals can complicate analyses significantly.
+\item
+  Some packages provide an infrastructure to deal with multiple animals
+  (e.g.~\texttt{adehabitat}, \texttt{move}).
+\item
+  \texttt{amt} has very limited support for dealing with multiple
+  animals, but relies on the infrastructure provided by the
+  \texttt{purrr} package.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{A slightly deeper look at R}
+\protect\hypertarget{a-slightly-deeper-look-at-r}{}
+\begin{itemize}
+\tightlist
+\item
+  \texttt{tibbles} are \emph{modern} data frames.
+\item
+  A tibble can have list columns.
+\item
+  A list is an other data structure in R, that can hold any other data
+  structure.
+\end{itemize}
+
+With list columns it is easy to have more complex splits of your data
+(e.g., animals/seasons/weeks).
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Lists}
+\protect\hypertarget{lists}{}
+\begin{block}{What is a list?}
+\protect\hypertarget{what-is-a-list}{}
+Lists are yet an other data structures for R. Lists are can contain any
+object (even other lists).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{l }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\StringTok{"a"}\NormalTok{, }\AttributeTok{b =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{, }\AttributeTok{x =} \FunctionTok{list}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{)))}
+\FunctionTok{str}\NormalTok{(l)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+List of 3
+$ : chr "a"
+$ b: int [1:10] 1 2 3 4 5 6 7 8 9 10
+$ x:List of 1
+..$ :List of 1
+.. ..$ : int [1:10] 1 2 3 4 5 6 7 8 9 10
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{Examples for lists}
+\protect\hypertarget{examples-for-lists}{}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{a =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\AttributeTok{b =} \FunctionTok{list}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{))}
+\NormalTok{x[[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 1 2 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x}\SpecialCharTok{$}\NormalTok{a}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 1 2 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x[[}\StringTok{"b"}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] 1 2 3
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}{Functional programming in R}
+\protect\hypertarget{functional-programming-in-r}{}
+\begin{block}{What is functional programming?}
+\protect\hypertarget{what-is-functional-programming}{}
+\begin{quote}
+Simply put, FP is exactly what it sounds like. If you are doing
+something more than once, it belongs in a function. In FP, functions are
+the primary method with which you should carry out tasks. All actions
+are just (often creative) implementations of functions you've written.
+\href{https://towardsdatascience.com/cleaner-r-code-with-functional-programming-adc37931ef7a}{towardsdatascience.com}
+\end{quote}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{The \texttt{apply}-family}
+\protect\hypertarget{the-apply-family}{}
+These functions apply a function on a \texttt{matrix}, \texttt{vector}
+or \texttt{list}.
+
+For matrices:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{apply} (we wont cover this here in more detail)
+\end{itemize}
+
+For vectors and lists
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{lapply}
+\item
+  \texttt{sapply}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{block}{\texttt{lapply}}
+\protect\hypertarget{lapply}{}
+To apply a function to each element of a list (or a vector) and the
+result should be a list, then \texttt{lapply} can be used.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{l }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+\FunctionTok{lapply}\NormalTok{(l, length)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] 3
+
+[[2]]
+[1] 1
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+Here it would make more sense to use \texttt{sapply} (R will try to
+simplify the data structure of the result).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sapply}\NormalTok{(l, length)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+Note, we used the shortest possible way, it is also possible to
+explicitly work with the object the function is applied to.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sapply}\NormalTok{(l, }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{length}\NormalTok{(x))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+
+Since \texttt{length} only uses one argument (here \texttt{x}), we do
+not have to explicitly call the function
+\end{frame}
+
+\begin{frame}[fragile]
+The \texttt{purrr} package provides a more type stable way to
+\texttt{*apply()} functions. These are called \texttt{map\_*()}.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{lapply} -\textgreater{} \texttt{map}
+\item
+  \texttt{sapply} -\textgreater{} \texttt{map\_*}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{map\_lgl} for logical values
+  \item
+    \texttt{map\_dbl} for doubles
+  \item
+    \texttt{map\_int} for integers
+  \item
+    \texttt{map\_chr} for text
+  \end{itemize}
+\end{itemize}
+
+In addition there variants of all \texttt{map*} functions take two
+inputs (\texttt{map2\_*}) and many inputs (\texttt{pmap*}).
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(purrr)}
+\FunctionTok{map}\NormalTok{(l, length)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] 3
+
+[[2]]
+[1] 1
+\end{verbatim}
+
+Better
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{map\_int}\NormalTok{(l, length)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+Again, it is possible to access the object directly. This can be done as
+before with \texttt{function(\textless{}var\textgreater{})}, or by
+default with \texttt{.} or \texttt{.x} together with
+\texttt{\textasciitilde{}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{map\_int}\NormalTok{(l, }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{length}\NormalTok{(x))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{map\_int}\NormalTok{(l, }\SpecialCharTok{\textasciitilde{}} \FunctionTok{length}\NormalTok{(.))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{map\_int}\NormalTok{(l, }\SpecialCharTok{\textasciitilde{}} \FunctionTok{length}\NormalTok{(.x))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 3 1
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+An example for \texttt{map2\_*}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{a }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}
+\NormalTok{b }\OtherTok{\textless{}{-}} \DecValTok{4}\SpecialCharTok{:}\DecValTok{1}
+
+\FunctionTok{map2\_dbl}\NormalTok{(a, b, }\SpecialCharTok{\textasciitilde{}}\NormalTok{ .x }\SpecialCharTok{+}\NormalTok{ .y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 5 5 5 5
+\end{verbatim}
+
+\begin{block}{Nest and unnest}
+\protect\hypertarget{nest-and-unnest}{}
+An example data set
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{12}\NormalTok{)}
+\NormalTok{dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{id =} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{, }\AttributeTok{each =} \DecValTok{10}\NormalTok{), }
+  \AttributeTok{x =} \FunctionTok{runif}\NormalTok{(}\DecValTok{100}\NormalTok{), }
+  \AttributeTok{y =} \FunctionTok{runif}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+We can use \texttt{nest} and \texttt{unnest} to create so called
+\texttt{list}-columns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{nest}\NormalTok{(}\AttributeTok{data =} \FunctionTok{c}\NormalTok{(x, y))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 10 x 2
+      id data             
+   <int> <list>           
+ 1     1 <tibble [10 x 2]>
+ 2     2 <tibble [10 x 2]>
+ 3     3 <tibble [10 x 2]>
+ 4     4 <tibble [10 x 2]>
+ 5     5 <tibble [10 x 2]>
+ 6     6 <tibble [10 x 2]>
+ 7     7 <tibble [10 x 2]>
+ 8     8 <tibble [10 x 2]>
+ 9     9 <tibble [10 x 2]>
+10    10 <tibble [10 x 2]>
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{nest}\NormalTok{(}\AttributeTok{data =} \SpecialCharTok{{-}}\NormalTok{id)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 10 x 2
+      id data             
+   <int> <list>           
+ 1     1 <tibble [10 x 2]>
+ 2     2 <tibble [10 x 2]>
+ 3     3 <tibble [10 x 2]>
+ 4     4 <tibble [10 x 2]>
+ 5     5 <tibble [10 x 2]>
+ 6     6 <tibble [10 x 2]>
+ 7     7 <tibble [10 x 2]>
+ 8     8 <tibble [10 x 2]>
+ 9     9 <tibble [10 x 2]>
+10    10 <tibble [10 x 2]>
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+We can then work on the nested column(s), using \texttt{mutate} in
+combination with \texttt{map\_*}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{nest}\NormalTok{(}\AttributeTok{data =} \SpecialCharTok{{-}}\NormalTok{id) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{centroid.x =} \FunctionTok{map\_dbl}\NormalTok{(data, }\SpecialCharTok{\textasciitilde{}} \FunctionTok{mean}\NormalTok{(.x}\SpecialCharTok{$}\NormalTok{x)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 10 x 3
+      id data              centroid.x
+   <int> <list>                 <dbl>
+ 1     1 <tibble [10 x 2]>      0.315
+ 2     2 <tibble [10 x 2]>      0.444
+ 3     3 <tibble [10 x 2]>      0.410
+ 4     4 <tibble [10 x 2]>      0.672
+ 5     5 <tibble [10 x 2]>      0.459
+ 6     6 <tibble [10 x 2]>      0.562
+ 7     7 <tibble [10 x 2]>      0.519
+ 8     8 <tibble [10 x 2]>      0.575
+ 9     9 <tibble [10 x 2]>      0.418
+10    10 <tibble [10 x 2]>      0.422
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Take-home messages}
+\protect\hypertarget{take-home-messages-2}{}
+\begin{enumerate}
+\tightlist
+\item
+  Available data structures can be used to deal with multiple animal.
+\item
+  Lists are just other ``containers'' to hold some data structures.
+\item
+  List columns are a great way to organize complex data structures.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Your turn}
+\protect\hypertarget{your-turn-3}{}
+Using the data set from before, what is the type of the new column?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{nest}\NormalTok{(}\AttributeTok{data =} \SpecialCharTok{{-}}\NormalTok{id) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{centroid =} \FunctionTok{map}\NormalTok{(data, }\SpecialCharTok{\textasciitilde{}} \FunctionTok{colMeans}\NormalTok{(.)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\tightlist
+\item
+  A list
+\item
+  Numeric
+\item
+  Double
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Data sets that we use}
+\protect\hypertarget{data-sets-that-we-use}{}
+\begin{itemize}
+\tightlist
+\item
+  We will use several data sets during this course including a data set
+  on fishers, elephants and deer.
+\item
+  Feel free to use your own data during the exercises, we are happy to
+  help to get it into shape.
+\item
+  For the R walkthrough we often simulate data. We believe if understand
+  how data is generated it is much easier to understand how a specific
+  method works.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Key resources/publications}
+\protect\hypertarget{key-resourcespublications}{}
+\footnotesize
+
+\begin{block}{Movement ecology}
+\protect\hypertarget{movement-ecology}{}
+\begin{itemize}
+\tightlist
+\item
+  Bunnefeld, N., Börger, L., van Moorter, B., Rolandsen, C. M., Dettki,
+  H., Solberg, E. J., \& Ericsson, G. (2011). A model‐driven approach to
+  quantify migration patterns: individual, regional and yearly
+  differences. Journal of Animal Ecology, 80(2), 466-476.
+\item
+  Bjorneraas et al.~2010: Screening Global Positioning System Location
+  Data for Errors Using Animal Movement Characteristics.
+  \url{https://doi.org/10.1111/j.1937-2817.2010.tb01258.x}
+\item
+  Joo, R., Boone, M. E., Clay, T. A., Patrick, S. C., Clusella‐Trullas,
+  S., \& Basille, M. (2020). Navigating through the R packages for
+  movement. Journal of Animal Ecology, 89(1), 248-267.
+\end{itemize}
+\end{block}
+
+\begin{block}{R resource}
+\protect\hypertarget{r-resource}{}
+\begin{itemize}
+\tightlist
+\item
+  Lovlace, R. et al.~(2019). Geocomputation with R:
+  \url{https://geocompr.robinlovelace.net/}.
+\item
+  Wickham, H. R for data science: \url{https://r4ds.had.co.nz/}
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\end{document}

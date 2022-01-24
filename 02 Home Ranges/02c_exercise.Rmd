@@ -1,0 +1,44 @@
+---
+title: "Home Ranges Exercise"
+author: "Brian J. Smith"
+date: "24 January 2022"
+output: 
+  html_document:
+    theme: default
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Let's apply what we've learned about home ranges. Refer to the lecture slides (<a href="02a_lecture.html" target="_blank" rel="noopener noreferrer">02a_lecture.html</a>) and the walkthrough code (`02b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use example data built into `amt`. You can access the fisher data like this:
+
+```{r amt_fisher, eval = FALSE}
+# Load `amt`
+library(amt)
+
+# Location data as 'track_xyt'
+dat <- amt_fisher
+
+```
+
+You likely have more than one individual in your own data, and `amt_fisher` also has 4 individuals. 
+
+## Instructions
+
+1. Load in your data or the `amt_fisher` dataset. If you're working with your own data, format it as a `track_xyt` object using `amt::make_track()`.
+  
+2. Create a nested `data.frame` by nesting by individual ID (or burst, if you have separate bursts in your data).
+  
+3. Fit a home range of your choice for each individual (feel free to fit more than one home range type). Fit at least two isopleths per home range, *e.g.*, 95% and 50%. 
+    
+4. Compute the area of each home range polygon. Convert the area to reasonable units for your study animal, such as ha or km^2^.
+  
+5. Make a map with each individual's home range. It's up to you whether you want all your individuals on a single map or one map per individual.

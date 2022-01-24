@@ -1,0 +1,72 @@
+---
+title: "CRAWL Exercise"
+author: "Brian J. Smith"
+date: "25 January 2022"
+output: 
+  html_document:
+    theme: default
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Let's apply what we've learned about imputation from continuous time movement models. Refer to the lecture slides (<a href="03a_lecture.html" target="_blank" rel="noopener noreferrer">03a_lecture.html</a>) and the walkthrough code (`03b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use the elephant data we provided for the exercise in Module 01. You can load it like this:
+
+```{r ele, eval = FALSE}
+library(tidyverse)
+
+dat <- read_csv("data/elephants.csv")
+
+```
+
+You likely have more than one individual in your own data, and the elephants data has 2 individuals. Feel free to try to tackle this problem for multiple individuals (hint, use a `nested data.frame`), but also feel free to subset to a single individual so you can focus on the imputation code. 
+
+## Instructions
+
+1. Load in your data or the elephant dataset. If your data were sampled irregularly, then great. If not, remove some locations so that you have gaps in your data. 
+
+    * You might find it easy to remove entire days, entire weeks, or entire months of your data. 
+    
+    * The elephants data has multiple years of data. You could even remove an entire year if you want.
+
+    * You might also find it fairly easy to randomly remove data, but note that you're not losing much information if you remove single points from a continuous track. Try to get chunks out at once.  
+    
+    * *Make sure you are a working in a projected coordinate system, not in lat/long.*
+    
+    * Also consider subsetting your full dataset to speed up computation. If you have a large number of points or a large number of individuals, the computation could wind up taking several minutes or longer.
+
+2. Decide on a statistic of interest to calculate from your dataset. Calculate it for your original data (unless your data are already irregularly sampled) and for your subset of "observed" data. 
+
+    * You might choose to measure the area of a 95% MCP like we did in the walkthrough. Perhaps you'd prefer to measure the area of a LoCoH home range. 
+    * Maybe you already have experience attaching environmental covariates from a raster, and you'd like to summarize those. 
+    * We haven't gone over habitat selection yet, but you could even fit a habitat selection model if you have prior experience.  
+
+3. Convert your remaining location data to a simple features (`sf`) `data.frame`.
+
+4. Fit a continuous-time correlated random walk model to your remaining data using `crawl::crwMLE()`. 
+
+    * Feel free to read the help file for that function to understand the complexity you can build into the model, but for our purposes, the defaults should be fine.  
+
+5. Use multiple imputation and recalculate your statistic of interest for each sample.
+
+    * Use your fitted model to simulate the missing points. Decide on a timestep that makes sense for your data, *e.g.*, the original timestep of your data.
+    * Repeat this many times so that you get a distribution for your statistic of interest.
+    * When you're finished simulating, calculate the mean 2.5^th^ quantile and 97.5^th^ quantile of your summary statistic. This is your estimate and 95% confidence interval for your statistic of interest.  
+    
+6. Make at least one figure to show us your findings. 
+
+    * You might want to plot the estimate and 95% confidence interval for your statistic of interest.
+    * You might want to plot the observed track and the imputed tracks for visual comparison.
+    
+<br>
+<hr>
+<br>
+    

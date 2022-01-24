@@ -1,0 +1,60 @@
+---
+title: "HSF Exercise"
+author: "Brian J. Smith"
+date: "26 January 2022"
+output: 
+  html_document:
+    theme: default
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Let's apply what we've learned about HSFs. Refer to the lecture slides (<a href="05a_lecture.html" target="_blank" rel="noopener noreferrer">05a_lecture.html</a>) and the walkthrough code (`05b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use example data built into `amt`. You can access the fisher data and some covariate rasters like this:
+
+```{r amt_fisher, eval = FALSE}
+# Load `amt`
+library(amt)
+
+# Location data as 'track_xyt'
+dat <- amt_fisher
+
+# Habitat data as list
+hab <- amt_fisher_covar
+
+```
+
+We will go over how to model multiple animals in a later module, so for now,
+subset your data (or the fisher data) to just one animal.
+
+## Instructions
+
+1. Load your data or the `amt` fisher data. Subset to a single individual.
+
+    * Recall that HSFs assume each point is independent and that all habitat is available.
+    * If you have high temporal resolution location data, you might want to subset to a coarser temporal resolution to maintain independence.
+
+2. Before you get started, consider your habitat variables. 
+
+    * Decide *a priori* whether each variable represents a resource, risk, or condition. 
+    * Make sure you distinguish between continuous and categorical (like landcover) variables.
+    * Include your thoughts about each variable as comments in your analysis script.
+    
+3. Fit a third-order HSF. *I.e.*, sample available points from within the home range of your individual.
+
+    * Make sure the form of each variable matches your *a priori* hypotheses about it from above (*i.e.*, are your continuous conditions modeled as parabolas?).
+    * Use the logistic regression approach by sampling a large number of available locations. Make sure to give the used locations a weight of 1 and the available locations large weights.
+    
+4. Plot the RSS (or log-RSS) for the range of each of your habitat variables.
+
+    * What does each plot tell you about the biology of your system?
+    * Be sure to include confidence intervals.
+

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Continuous-time Movement Models</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian J. Smith" />
+    <meta name="date" content="2022-01-26" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="../css/default.css" type="text/css" />
+    <link rel="stylesheet" href="../css/default-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: center, middle, inverse
+
+# Continuous-time Movement Models
+## ⌚
+
+Brian J. Smith  
+25 January 2022
+
+*Analysis of Animal Movement Data in R*  
+J. Signer &amp; B. Smith  
+
+---
+class: center, middle
+
+# Continuous vs. Discrete Time
+
+---
+.pull-left[
+## Continuous vs. discrete time
+
+&gt; "Moving animals trace continuous paths through space. However, in order to record and analyze the pattern of their movement the essential characteristics of an observed path have to be represented in a discrete form suitable for computer storage and analysis... Note that this empirical approach to representing paths fits well with the theoretical framework of discrete random walks."
+
+&amp;#8212; Turchin 1998, p. 128]
+
+.pull-right[![Turchin 1998 Cover](https://images-na.ssl-images-amazon.com/images/I/41Cx44B2j6L.jpg)]
+
+---
+.pull-left[
+## Continuous vs. discrete time
+
+&gt; "The discrete-time context is valuable because (1) a wealth of tools can be borrowed from the time series literature, (2) the dynamics are easily conceptualized in discrete time, and finally, (3) we are implementing models digitally on computers, thus we must discretize ... One could argue, however, that the true process of movement really occurs in both continuous time and continuous space."
+
+&amp;#8212; Hooten et al. 2017, p. 189]
+
+.pull-right[![Hooten et al 2017 Cover](https://images.routledge.com/common/jackets/originals/978103209/9781032097183.tif)]
+
+---
+class:center, middle
+&lt;img src="figs/path.png" alt="movement path" width=500px height=500px&gt;
+
+---
+class:center, middle
+&lt;img src="figs/steps1.png" alt="movement path with steps" width=500px height=500px&gt;
+
+---
+## Continuous vs. discrete time
+.pull-left[
+### Why discrete time?
+
+- Animal movement is observed at discrete intervals.
+- Step lengths and turn angles drawn from stochastic distributions at discrete times are intuitive to understand.
+  + Fitted parameters are also easier to understand.
+- Makes latent behavioral states easier to estimate (next module).]
+
+--
+
+.pull-right[
+### Why continuous time?
+
+- Animals actually move in continuous time.
+- Handles data collected at irregular times.
+  + Discrete-time analyses are not timescale-invariant.
+- Computationally fast approximations are available. 
+  + (but not for &gt;2 latent behavioral states)
+]
+
+--
+&lt;br&gt;
+&lt;span style = "color:#909090; font-size:80%;"&gt;*For a more detailed comparison, see McClintock et al. (2014).*&lt;/span&gt;
+
+---
+
+class: center, middle
+
+# Types of CTMM
+
+---
+
+## Classifying random walks
+
+Random walks (in discrete or continuous time) can be classified depending on whether or not they include correlation or bias:
+
+- Simple random walk (**RW** or Brownian motion; **BM**)
+- Correlated random walk (**CRW**)
+- Biased random walk (**BRW**)
+- Biased correlated random walk (**BCRW**)
+
+&lt;br&gt;
+&lt;span style = "color:#909090; font-size:80%;"&gt;*We will cover the models presented by Fleming et al. (2014).*&lt;/span&gt;
+
+---
+
+## Brownian motion
+
+- Pure random walk in continuous time
+- Constant diffusion rate
+
+---
+
+## Anomalous diffusion
+
+- Generalizes Brownian motion
+  + Still not **CRW** or **BRW**
+- Power-law diffusion
+- Extra parameter, `\(\alpha\)`
+  + `\(\alpha &lt; 1 \Rightarrow\)` subdiffusion
+  + `\(\alpha = 1 \Rightarrow\)` diffusion (Brownian motion)
+  + `\(\alpha &gt; 1 \Rightarrow\)` superdiffusion (ballistic motion)
+  
+---
+
+## Brownian and anomalous diffusion
+
+.center[ &lt;img src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Msd_anomalous_diffusion.svg/1024px-Msd_anomalous_diffusion.svg.png" width = 683, height = 522&gt; ]
+
+.footnote[ [Wikipedia](https://en.wikipedia.org/wiki/Anomalous_diffusion) ]
+
+---
+
+## Ornstein-Uhlenbeck process
+
+- Restricted **BM** with central attractor
+  + "Mean-reverting" process
+  + *I.e.*, attraction to a mean **position** (see below)
+- Often interpreted as foraging within a home range
+  + Attractor is the center of the home range
+- **BRW**
+
+*Note*
+- An OU process in terms of velocity (attraction to a mean velocity) was used by Johnson et al. (2008) to parameterize a **CRW**
+
+---
+
+## Ornstein-Uhlenbeck process with foraging (OUF)
+
+- OU model with foraging
+  + Newly developed by Fleming et al. (2014) to improve model fit with real data.
+  + Often referred to by Fleming et al. as simply an "OUF model."
+- Extra parameter, `\(\tau_F\)` describing timescale of foraging bouts. When behavior is observed for some timescale, `\(\tau\)`, and compared with home-range transiting time, `\(\tau_H\)`:  
+  
+  + `\(\tau &lt; \tau_F \Rightarrow\)` *(small timescale)* superdiffusive (ballistic) motion
+  + `\(\tau_F &lt; \tau &lt; \tau_H \Rightarrow\)` *(intermediate timescale)* regular diffusive (Brownian) motion
+  + `\(\tau &gt; \tau_H \Rightarrow\)` *(long timescale)* ordinary OU motion
+
+---
+
+## Others
+
+There are many other ways to parameterize a continuous time random walk. 
+
+The models we just covered are those implemented in the R packages `ctmm` and `CRAWL`.
+
+---
+class: inverse
+
+## Take-home messages
+
+- There are many ways to parameterize a random walk in continuous time.
+
+- Random walks can be categorized by whether or not they exhibit bias or directional correlation.
+
+- Ornstein-Uhlenbeck processes are mean-reverting and can be used to parameterize a:
+  - BRW: position function is mean-reverting,
+  - CRW: velocity function is mean-reverting.
+
+---
+
+class: center, middle
+
+# Regularizing Irregular Data
+
+---
+
+## Regularizing irregular data
+
+There are many uses for continuous time movement models, but for those of us that typically work in discrete time, one common use is regularizing irregular data.
+
+---
+
+class:center, middle
+&lt;img src="figs/steps1.png" alt="movement path with steps" width=500px height=500px&gt;
+
+---
+
+## Should I regularize?
+
+Does the analysis you need require it?
+
+--
+
+- Some analyses assume independent points (HSFs).
+
+--
+
+- Some analyses that require regular timesteps are agnostic to gaps (iSSA).
+
+--
+
+.center[
+&lt;img src="figs/steps1_missing.png" alt="movement path with missing step" width=300px height=300px&gt;
+]
+
+---
+
+## Should I regularize?
+
+Does the analysis you need require it?
+
+- Some analyses assume independent points (HSFs).
+
+- Some analyses that require regular timesteps are agnostic to gaps (iSSA).
+
+- Some analyses **do require** regular timesteps without gaps (HMM).
+
+---
+
+## Should I regularize?
+
+Is your analysis sensitive to "wrong" locations?
+
+- *E.g.*, could it bias your habitat selection analysis? 
+- By how much?
+
+---
+
+
+class:center, middle
+&lt;img src="figs/steps1.png" alt="movement path with steps" width=600px height=600px&gt;
+
+---
+
+class:center, middle
+&lt;img src="figs/steps1_habitat.png" alt="movement path with steps and habitat" width=600px height=600px&gt;
+
+---
+
+class:center, middle
+&lt;img src="figs/steps1_habitat_impute1.png" alt="movement path with steps and habitat and correct interpolation" width=600px height=600px&gt;
+
+---
+
+class:center, middle
+&lt;img src="figs/steps1_habitat_impute2.png" alt="movement path with steps and habitat and incorrect interpolation" width=600px height=600px&gt;
+
+---
+
+## Multiple imputation
+
+If you need to interpolate your data, it might be a good idea to use multiple imputation.
+
+---
+
+## Multiple imputation
+
+.center[
+&lt;img src="figs/multiple_imputation1.png" alt="multiple imputation figure 1" width=900px height=500px&gt;
+]
+
+
+---
+
+## Multiple imputation
+
+.center[
+&lt;img src="figs/multiple_imputation2.png" alt="multiple imputation figure 2" width=900px height=500px&gt;
+]
+
+
+---
+
+## Multiple imputation
+
+.center[
+&lt;img src="figs/multiple_imputation3.png" alt="multiple imputation figure 3" width=900px height=500px&gt;
+]
+
+
+---
+class: inverse
+
+## Take-home messages
+
+- Don't rush to regularize your data if you don't need to.
+
+- If you need to regularize, consider multiple imputation to consider the uncertainty in the imputed values.
+
+---
+
+class: center, middle
+
+# Questions?
+
+---
+
+class: small-font
+
+# References
+
+
+&lt;a name=bib-Codling2008&gt;&lt;/a&gt;[Codling, E. A., M. J. Plank, and S.
+Benhamou](#cite-Codling2008) (2008). "Random walk models in biology".
+In: _Journal of the Royal Society Interface_ 5.25, pp. 813-834. DOI:
+[10.1098/rsif.2008.0014](https://doi.org/10.1098%2Frsif.2008.0014).
+
+&lt;a name=bib-Fleming2014&gt;&lt;/a&gt;[Fleming, C. H., J. M. Calabrese, T.
+Mueller, et al.](#cite-Fleming2014) (2014). "From fine-scale foraging
+to home ranges: A semivariance approach to identifying movement modes
+across spatiotemporal scales". In: _American Naturalist_ 183.5. DOI:
+[10.1086/675504](https://doi.org/10.1086%2F675504).
+
+&lt;a name=bib-Johnson2008&gt;&lt;/a&gt;[Johnson, D. S., J. M. London, M. A. Lea,
+et al.](#cite-Johnson2008) (2008). "Continuous-time correlated random
+walk model for animal telemetry data". In: _Ecology_ 89.5, pp.
+1208-1215. DOI:
+[10.1890/07-1032.1](https://doi.org/10.1890%2F07-1032.1).
+
+&lt;a name=bib-McClintock2014&gt;&lt;/a&gt;[McClintock, B. T., D. S. Johnson, M. B.
+Hooten, et al.](#cite-McClintock2014) (2014). "When to be discrete: The
+importance of time formulation in understanding animal movement". In:
+_Movement Ecology_ 2.1, pp. 1-14. DOI:
+[10.1186/s40462-014-0021-6](https://doi.org/10.1186%2Fs40462-014-0021-6).
+
+&lt;a name=bib-MevinBHooten2017&gt;&lt;/a&gt;[Mevin B. Hooten, D. S. Johnson, B. T.
+McClintock, et al.](#cite-MevinBHooten2017) (2017). _Animal movement_.
+ISBN: 978-1-4665-8214-9.
+
+&lt;a name=bib-Turchin1998&gt;&lt;/a&gt;[Turchin, P.](#cite-Turchin1998) (1998).
+_Quantitative Analysis of Movement: Measuring and Modeling Population
+Redistribution in Animals and Plants_. Sunderland, MA: Sinauer Press,
+p. 410. ISBN: 0996139508.
+
+&lt;br&gt;
+
+.note[ See also this highly useful [Guide to Crawl-ing with R](https://jmlondon.github.io/crawl-workshop/) book by Josh London and Devin Johnson, authors of the `crawl` package. ]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

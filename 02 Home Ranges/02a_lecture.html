@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Home Ranges</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian J. Smith" />
+    <meta name="date" content="2022-01-24" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="../css/default.css" type="text/css" />
+    <link rel="stylesheet" href="../css/default-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: center, middle, inverse
+
+# Home Ranges
+## Quantifying space use of animals
+
+Brian J. Smith  
+24 January 2022
+
+*Analysis of Animal Movement Data in R*  
+J. Signer &amp; B. Smith  
+
+---
+class: center, middle
+
+# What is a home range?
+
+---
+  
+## Classic definition
+
+&gt; "That area traversed by the individual in its normal activities of food gathering, mating, and caring for young. Occasional sallies outside the area, perhaps exploratory in nature, should not be considered as part of the home range."
+
+&amp;#8212; Burt 1943
+
+---
+name: mod-def
+
+## Some modern definitions
+
+---
+
+template: mod-def
+
+&gt; "Home ranges are the spatial expression of behaviours animals perform to survive and reproduce. These macroscopic patterns are determined by a large number of single movement steps, each of which results from the interactions among individual characteristics, individual state, and the external environment, and the moving animal in turn modifies both its individual state and the external environment. Home ranges are hence the resultant patterns of dynamic processes, which has profound consequences for the population-level effects of home range behaviour."
+
+&amp;#8212; Börger et al. 2008
+
+---
+
+template: mod-def
+
+&gt; "We propose that a home range is that part of an animal’s cognitive map that it chooses to keep up-to-date with the status of resources (including food, potential mates, safe sites, and so forth) and where it is willing to go to meet its requirements (even though it may not go to all such places)."
+
+&amp;#8212; Powell and Mitchell 2012
+
+---
+class: inverse
+## Take-home messages
+
+- Home ranges *emerge* from a complex interplay of different factors:
+    + the heterogeneous environment
+    + the organism's internal state
+      - its current needs/drivers
+      - its cognitive map
+    + the organism's movement capacity
+
+- Home-range estimation should be question driven, recognizing that home ranges, *per se*, are not typically the focus of biological interest (Fieberg and Börger 2012).
+
+---
+class: center, middle
+
+# Estimating the home range
+
+---
+
+## A criticism of the classic definition
+
+&gt; "The conceptual definition of home range given by Burt (1943) lacks an objective, mathematical description that can be statistically estimated from data. We view relocation data as a sample of a much longer, continuous trajectory that is only one of many possible movement-path realizations of a continuous-time stochastic process."
+
+&amp;#8212; Fleming et al. 2015
+ 
+---
+
+## Two targets for estimation
+
+- ### Range distribution
+
+- ### Occurrence distribution
+
+---
+
+## Two targets for estimation
+
+- ### Range distribution
+
+&gt; "The range distribution addresses the lifetime space requirements of an animal and provides a metric that can be compared across individuals."
+
+&amp;#8212; Fleming et al. 2015
+&lt;br&gt;
+
+--
+- ### Occurrence distribution
+
+&gt; "... where an animal was located during the observation period."
+
+&amp;#8212; Fleming et al. 2015
+
+---
+
+## Two targets for estimation
+
+.center[ ![Occurence Distribution](figs/occ_fig.png) ]
+
+---
+
+## Two targets for estimation
+
+.center[ ![Occurence Distribution with long track](figs/occ_fig_long.png) ]
+
+---
+
+## Two targets for estimation
+
+.center[ ![Range Distribution](figs/rng_fig.png) ]
+
+---
+
+## Types of estimators
+
+--
+
+### Geometric
+- Constructed following a set of rules; often hull-based.
+- Based on the observed locations.
+
+--
+
+### Probabilistic
+- Rely on an underlying probabilistic model used to construct a **utilization distribution (UD)**.
+- Can be represented as a hull by outlining a cumulative probability of use.
+
+---
+## Illustrating estimators
+
+.pull-left[
+We will illustrate some geometric and probabilistic estimators using example data from a published dataset on fishers (*Pekania pennanti*) from New York, USA (LaPoint et al. 2013).
+
+![fisher](../img/fisher.png)
+
+The example data are also available in the package `amt`.
+]
+
+.pull-right[ ![fisher locations](figs/locs.png) ]
+
+---
+
+name: geom
+## Geometric estimators
+
+---
+template: geom
+
+Geometric estimators rely only the observed data.
+
+Therefore, they always estimate the occurrence distribution.
+
+---
+template: geom
+
+.pull-left[
+### Minimum Convex Polygon (MCP)
+
+- 100% MCP: The smallest polygon that encompasses 100% of the locations without any concave sides (all interior angles ≤ 180°).
+
+- Smaller MCPs can be created by excluding the most extreme locations.
+  + *E.g.*, a 95% MCP excludes 5% of the most extreme locations before fitting an MCP.
+]
+
+.pull-right[![MCP](figs/mcp.png)]
+
+---
+template: geom
+
+.pull-left[
+### Local Convex Hull (LoCoH)
+- Constructs small MCPs around every location and groups of its "neighbors".
+- Nearby hulls are the successively merged to create an isopleth containing `\(x\)` % of the locations.
+- Smaller isopleths are more intensively used.
+  - Approximates a UD.
+- Resulting home range can contain sharp edges and holes.
+
+.note[ See Getz et al. (2004, 2007) for details. ]
+]
+
+.pull-right[ ![LoCoH](figs/locoh.png) ]
+
+---
+template: geom
+
+.pull-left[
+### Local Convex Hull (LoCoH)
+- Neighborhoods can be defined by one of several algorithms
+  - Fixed points **k-LoCoH**: Each hull contains the focal point and its `\(k-1\)` nearest neighbors
+  - Fixed radius **r-LoCoH**: Each hull contains all points within a radius `\(r\)` of the focal point
+  - Adaptive **a-LoCoH**: Each hull contains all points within a variable radius such that the sum of the distances between the points and the focal point is `\(\leq a\)`.
+]
+
+.pull-right[ ![LoCoH](figs/locoh.png) ]
+
+---
+name: prob
+
+## Probabilistic estimators
+
+---
+template: prob
+
+Probabilistic estimators are constructed from an underlying statistical model for the UD.
+
+They might estimate the occurrence distribution *or* the range distribution.
+
+---
+class: center, middle 
+
+*But first,* 
+
+### What is a UD?
+
+---
+### What is a UD?
+
+.pull-left[
+&gt; The utilization distribution is "a probability distribution ... for the use of space with respect to time. That is, the utilization distribution usually calculated shows the probabilities of where an animal might have been found at any randomly chosen *time*."
+
+&amp;#8212; Powell and Mitchell 2012
+]
+
+.pull-right[![UD](figs/ud.png)]
+---
+template: prob
+
+.pull-left[
+### Kernel Density Estimator (KDE)
+
+- Kernel density estimation is a general problem in statistics. 
+  - (estimating a continuous PDF from discrete samples)
+- Smooths over the locations using a weighted window, the "kernel".
+- Sensitive to choice of "bandwidth" parameter (size of the kernel).
+- Estimates the **occurrence distribution**.
+
+]
+
+.pull-right[![KDE](figs/kde.png)]
+
+---
+template: prob
+
+.pull-left[
+### Autocorrelated Kernel Density Estimator (aKDE)
+
+- Based on an underlying continuous-time movement model (next module).
+- Uses autocorrelation in the movement data to estimate the smoothing parameter.
+- Estimates the **range distribution**.
+
+.note[ See [Silva et al. 2021](https://doi.org/10.1111/2041-210X.13786) for a recent review and practical guide for aKDE estimation. ]
+]
+
+.pull-right[![aKDE](figs/akde.png)]
+
+---
+class: inverse
+
+## Take-home messages
+
+- Home range estimators can target either of two distributions:
+  - Occurrence distribution: where the animal was during the study period
+  - Range distribution: where the animal could be found at any future time if its movement process remains the same.
+  
+- Geometric estimators only rely on observed data and can only estimate the occurrence distribution.
+
+- Probabilistic estimators are based on an underlying model for the UD. They can estimate the occurrence distribution or the range distribution depending on the underlying model.
+
+---
+
+class: center, middle
+
+# Questions?
+
+---
+
+class: small-font
+
+# References
+
+
+&lt;a name=bib-Borger2008&gt;&lt;/a&gt;[Börger, L., B. D. Dalziel, and J. M.
+Fryxell](#cite-Borger2008) (2008). "Are there general mechanisms of
+animal home range behaviour? A review and prospects for future
+research". In: _Ecology Letters_ 11.6, pp. 637-650. DOI:
+[10.1111/j.1461-0248.2008.01182.x](https://doi.org/10.1111%2Fj.1461-0248.2008.01182.x).
+
+&lt;a name=bib-Burt1943&gt;&lt;/a&gt;[Burt, W. H.](#cite-Burt1943) (1943).
+"Territoriality and Home Range Concepts as Applied to Mammals". In:
+_American Society of Mammalogists_ 24.3, pp. 346-352.
+
+&lt;a name=bib-Fieberg2012&gt;&lt;/a&gt;[Fieberg, J. and L.
+Börger](#cite-Fieberg2012) (2012). "Could you please phrase home range
+as a question?". In: _Journal of Mammalogy_ 93.4, pp. 890-902. DOI:
+[10.1644/11-MAMM-S-172.1](https://doi.org/10.1644%2F11-MAMM-S-172.1).
+
+&lt;a name=bib-Fleming2015&gt;&lt;/a&gt;[Fleming, C. H., W. F. Fagan, T. Mueller,
+et al.](#cite-Fleming2015) (2015). "Rigorous home range estimation with
+movement data: a new autocorrelated kernel density estimator". In:
+_Ecology_ 96.5, pp. 1182-1188. DOI:
+[10.1890/14-2010.1](https://doi.org/10.1890%2F14-2010.1).
+
+&lt;a name=bib-Getz2007&gt;&lt;/a&gt;[Getz, W. M., S. Fortmann-Roe, P. C. Cross, et
+al.](#cite-Getz2007) (2007). "LoCoH: Nonparameteric Kernel methods for
+constructing home ranges and utilization distributions". In: _PLoS ONE_
+2.2. DOI:
+[10.1371/journal.pone.0000207](https://doi.org/10.1371%2Fjournal.pone.0000207).
+
+&lt;a name=bib-Getz2004&gt;&lt;/a&gt;[Getz, W. M. and C. C.
+Wilmers](#cite-Getz2004) (2004). "A local nearest-neighbor convex-hull
+construction of home ranges and utilization distributions". In:
+_Ecography_ 27, pp. 489-505.
+
+&lt;a name=bib-Kie2010&gt;&lt;/a&gt;[Kie, J. G., J. Matthiopoulos, J. R. Fieberg,
+et al.](#cite-Kie2010) (2010). "The home-range concept: are traditional
+estimators still relevant with modern telemetry technology?". In:
+_Philosophical Transactions of the Royal Society B: Biological
+Sciences_ 365.1550, pp. 2221-2231. DOI:
+[10.1098/rstb.2010.0093](https://doi.org/10.1098%2Frstb.2010.0093).
+
+&lt;a name=bib-LaPoint2013&gt;&lt;/a&gt;[LaPoint, S., P. Gallery, M. Wikelski, et
+al.](#cite-LaPoint2013) (2013). "Animal behavior, cost-based corridor
+models, and real corridors". In: _Landscape Ecology_ 28.8, pp.
+1615-1630. DOI:
+[10.1007/s10980-013-9910-0](https://doi.org/10.1007%2Fs10980-013-9910-0).
+
+&lt;a name=bib-Powell2012&gt;&lt;/a&gt;[Powell, R. A. and M. S.
+Mitchell](#cite-Powell2012) (2012). "What is a home range?". In:
+_Journal of Mammalogy_ 93.4, pp. 948-958. DOI:
+[10.1644/11-MAMM-S-177.1](https://doi.org/10.1644%2F11-MAMM-S-177.1).
+
+&lt;a name=bib-Signer2021&gt;&lt;/a&gt;[Signer, J. and J. R.
+Fieberg](#cite-Signer2021) (2021). "A fresh look at an old concept:
+Home-range estimation in a tidy world". In: _PeerJ_ 9, pp. 1-22. DOI:
+[10.7717/peerj.11031](https://doi.org/10.7717%2Fpeerj.11031).
+
+&lt;a name=bib-Silva2021&gt;&lt;/a&gt;[Silva, I., C. H. Fleming, M. J. Noonan, et
+al.](#cite-Silva2021) (2021). "Autocorrelation-informed home range
+estimation: a review and practical guide". In: _Methods in Ecology and
+Evolution_ 2021.July, pp. 1-11. DOI:
+[10.1111/2041-210x.13786](https://doi.org/10.1111%2F2041-210x.13786).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

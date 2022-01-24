@@ -1,0 +1,353 @@
+\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(handout)$handout,$endif$$if(beamer)$ignorenonframetext,$endif$$for(classoption)$$classoption$$sep$,$endfor$,t]{$documentclass$}
+
+\usepackage{listings}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\setbeamerfont{caption}{size=\tiny, shape=\itshape}
+\beamertemplatenavigationsymbols$if(navigation)$$navigation$$else$empty$endif$
+
+
+$if(fontfamily)$
+  \usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+$else$
+  \usepackage{lmodern}
+$endif$
+
+
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+
+\usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}
+
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+\fi
+
+\defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+
+$if(euro)$
+\newcommand{\euro}{€}
+$endif$
+
+$if(mainfont)$
+\setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+$endif$
+
+$if(sansfont)$
+\setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$]{$sansfont$}
+$endif$
+
+$if(monofont)$
+\setmonofont[Mapping=tex-ansi$if(monofontoptions)$,$for(monofontoptions)$$monofontoptions$$sep$,$endfor$$endif$]{$monofont$}
+$endif$
+
+$if(mathfont)$
+\setmathfont(Digits,Latin,Greek)[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+$endif$
+
+$if(CJKmainfont)$
+\usepackage{xeCJK}
+\setCJKmainfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmainfont$}
+$endif$
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Font sizes
+%\usefonttheme[stillsansseriflarge]{serif}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamerfont{title}{series=\bfseries,size=\Large}
+\setbeamerfont{subtitle}{size=\small}
+
+
+% Color
+\usepackage{color}
+\definecolor{spamwell}{RGB}{0,126,63}
+\setbeamercolor{frametitle}{fg=spamwell,bg=spamwell!20}
+\setbeamercolor{title}{fg=spamwell,bg=spamwell!20}
+\setbeamercolor{structure}{fg=spamwell}
+\setbeamercolor{alerted text}{fg=spamwell}
+%\setbeamercolor{bibliography entry author}{fg=red!20}
+
+\hypersetup{
+  colorlinks,
+  allcolors=spamwell!80}
+
+% Title graphic
+\titlegraphic{\includegraphics[width=2cm]{/home/jsigner/ownCloud/img/logo-uni}\hspace{1cm}\includegraphics[width=2cm]{/home/jsigner/ownCloud/img/logo-abteilung}}
+
+% Itemize list
+\setbeamertemplate{itemize items}[circle]
+
+\let\oldtextbf\textbf
+\renewcommand{\textbf}[1]{\textcolor{spamwell}{\oldtextbf{#1}}}
+
+
+\usepackage{pgf}
+
+% Booktabs
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+
+% Section
+
+
+% Footline
+\setbeamercolor{footlinecolor}{fg=spamwell, bg=spamwell!20}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[sep=1em,wd=\paperwidth,leftskip=0.2cm,rightskip=0.2cm]{footlinecolor}
+    \hspace{0.01cm}%
+    %Johannes Signer (jsigner@gwdg.de)\hfill\insertframenumber/\inserttotalframenumber
+    Johannes Signer (jsigner@uni-goettingen.de)\hfill\insertframenumber
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{navigation symbols}{}
+
+% Verbatim
+\usepackage{xcolor, url}
+\definecolor{dark-gray}{gray}{0.30}
+\makeatletter
+\renewcommand\verbatim@font{\footnotesize\color{dark-gray}\normalfont\ttfamily}
+\makeatletter
+
+% tight list
+
+\providecommand{\tightlist}{%
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+$if(lang)$
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage[shorthands=off,$for(babel-otherlangs)$$babel-otherlangs$,$endfor$main=$babel-lang$]{babel}
+$if(babel-newcommands)$
+$babel-newcommands$
+$endif$
+
+\else
+\usepackage{polyglossia}
+\setmainlanguage[$polyglossia-lang.options$]{$polyglossia-lang.name$}
+$for(polyglossia-otherlangs)$
+\setotherlanguage[$polyglossia-otherlangs.options$]{$polyglossia-otherlangs.name$}
+$endfor$
+\fi
+$endif$
+
+\usepackage{copyrightbox}
+
+\newif\ifbibliography
+
+$if(bibliography)$
+
+\usepackage[natbib=true, bibstyle=authoryear, citestyle=authoryear-comp, backend=biber, firstinits=true, block=space, maxnames=1, doi=false, url=false]{biblatex}
+\addbibresource{/home/jsigner/lib.bib}
+\renewcommand*{\bibfont}{\tiny}
+\bibhang1em
+
+% color of citation
+\AtEveryCite{\color{spamwell!80}}
+
+$endif$
+
+
+$if(listings)$
+\usepackage{listings}
+$endif$
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+
+
+$if(tables)$
+\usepackage{longtable,booktabs}
+\usepackage{caption}
+% These lines are needed to make table captions work with longtable:
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
+$endif$
+
+$if(graphics)$
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight0.8\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+$if(section-titles)$
+\AtBeginPart{
+\let\insertpartnumber\relax
+\let\partname\relax
+\frame{\partpage}
+}
+
+% Thanks to http://tex.stackexchange.com/questions/178800/creating-sections-each-with-title-pages-in-beamers-slides
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=false]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+%  \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+
+\AtBeginSubsection{
+\let\insertsubsectionnumber\relax
+\let\subsectionname\relax
+\frame{\subsectionpage}
+}
+
+
+% Block titles
+
+%\setbeamertemplate{blocktitle}{%
+%    \usebeamerfont{blocktitle}\insertblocktitle%
+%    \vphantom{g}% To avoid fluctuations per frame
+%    %\hrule% Uncomment to see desired effect, without a full-width hrule
+%    \makebox[\linewidth][l]{\rule{\paperwidth}{0.4pt}}%
+%}
+% https://tex.stackexchange.com/questions/524621/customize-beamer-block-environment-underline-block-title
+\addtobeamertemplate{block begin}{%
+    \let\oldinsertblocktitle\insertblocktitle%
+    \def\insertblocktitle{\underline{\oldinsertblocktitle}}%
+}{}
+
+
+$endif$
+
+
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+$if(numbersections)$
+\setcounter{secnumdepth}{5}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+
+$if(dir)$
+\ifxetex
+% load bidi as late as possible as it modifies e.g. graphicx
+$if(latex-dir-rtl)$
+\usepackage[RTLdocument]{bidi}
+$else$
+\usepackage{bidi}
+$endif$
+
+\fi
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\TeXXeTstate=1
+\newcommand{\RL}[1]{\beginR #1\endR}
+\newcommand{\LR}[1]{\beginL #1\endL}
+\newenvironment{RTL}{\beginR}{\endR}
+\newenvironment{LTR}{\beginL}{\endL}
+\fi
+$endif$
+
+%  itemsep for lists: https://stackoverflow.com/questions/58318568/how-to-increase-distance-between-bullet-points-in-r-markdown
+\renewcommand{\tightlist}{\setlength{\itemsep}{1.4ex}\setlength{\parskip}{0pt}}
+
+
+% footnotesize
+\setbeamerfont{footnote}{size=\tiny}
+
+% title
+$if(title)$
+\title{$title$}
+$endif$
+
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+
+$if(author)$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$endif$
+
+$if(institute)$
+\institute{$institute$}
+$endif$
+
+\date{$date$}
+
+\begin{document}
+$if(title)$
+\frame{\titlepage}
+$endif$
+
+
+$if(toc)$
+\begin{frame}{$toc-title$}
+\tableofcontents[hideallsubsections]
+\end{frame}
+$endif$
+
+$body$
+
+$if(bibliography)$
+  \begin{frame}[t,allowframebreaks]{$biblio-title$}
+  \bibliographytrue
+  \printbibliography[heading=none]
+  \end{frame}
+$endif$
+
+\end{document}
+
