@@ -31,6 +31,14 @@ theme_set(theme_light())
 - In order to use statistical models to describe the movement process. 
 - This is most easily done using statistical distributions for step lengths and turn angles. 
 
+-----
+
+
+```{r, fig.cap="Source: Edelhoff et al. 2016", echo = FALSE, out.width="50%"}
+knitr::include_graphics("img/edel.png")
+```
+
+
 # Distributions in statistics
 
 - Random variables, are variables where each outcome has a probability and these probabilities are often mathematically summarized with functions that are characterized with one or more parameters (=**distributions**). 
@@ -194,6 +202,7 @@ What an HMM models is a set of parameters for the step-length distribution and t
 2. Hidden Markov Models model an observed time series. 
 3. Transition between states can depend on environmental covariates.
 
+<!-----
 # Your turn
 
 A three HMM has the following three sates: foraging, resting and travelling.
@@ -203,6 +212,7 @@ The probability of remaining in state 1 is 0.9, the probability to transition fr
 1. 0.05
 2. 0.1
 3. It's impossible to say without further information
+--->
 
 ----------
 
@@ -225,7 +235,7 @@ HMM use a non linear optimization and is sensitive to different starting values.
 
 - Pseudo residuals can be calculated for HMMs. If the models fits the data well, these residuals should approximately follow a normal distribution. 
 - This can be checked using qqplots. 
-- Restrict residual checking to step lengths. For turn angles this not straight forward due to their circularity. 
+- Restrict residual checking to step lengths. For turn angles this is more complicated due to the circular nature of the data. 
 
 
 # An example
@@ -255,12 +265,6 @@ The transitions between states can be modeled as a function of covariates.
 ```{r, echo = FALSE, out.width="90%", fig.align="center"}
 knitr::include_graphics("img/hmm2.png")
 ```
-
-
-## Take-home messages
-
------
-
 
 
 
