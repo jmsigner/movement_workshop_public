@@ -146,11 +146,69 @@ Note that $w(x)$ is merely proportional to the ratio of used:available. However,
 In that case $w(x) = 1$ indicates no selection as written on the slide.
 
 ---
+
+## Classifying environmental variables
+
+Habitat selection theory posits that habitat selection behavior evolves because of the effect of habitats on *fitness*.
+
+--
+
+Since habitat is defined by a set of environmental variables, it is useful to categorize these variables by the effects they have on fitness.
+
+--
+
+- Matthiopoulos et al. (2015) suggested classifying environmental variables into **resources**, **risks**, and **conditions.**
+
+---
+
+## Classifying environmental variables
+
+### Resources
+
+> "Environmental variables whose density has a positive and monotonic relationship with fitness (i.e., the more, the better)."
+
+&#8212; Matthiopoulos et al. (2015)
+
+???
+
+We typically expect organisms to show positive selection for resources.
+
+---
+
+## Classifying environmental variables
+
+### Risks
+
+> "Risks are environmental variables that have a negative relationship with fitness by lowering the actual or perceived chances of individual survival or reproduction."
+
+&#8212; Matthiopoulos et al. (2020)
+
+???
+
+We typically expect organisms to show negative selection for (*i.e.*, avoidance of) risks.
+
+---
+
+## Classifying environmental variables
+
+### Conditions
+
+> "Conditions are environmental variables (such as ambient temperature, humidity, salinity or pressure) that surround the organism and influence its functioning. Crucially, conditions can have both positive and negative influences on fitness."
+
+&#8212; Matthiopoulos et al. (2020)
+
+???
+
+We typically expect organisms to select for intermediate values of conditions, so we often model selection with a function that is non-monotonic, *e.g.*, a parabola.
+
+---
 class: inverse
 
 ## Take-home messages
 
 - Habitats are any point we measure in E-space.
+
+- It is useful to classify environmenal variables (habitat dimensions) as resources, risks, or conditions.
 
 - Habitat selection is the process by which habitat use is disproportionate (higher or lower) to habitat availability.
 

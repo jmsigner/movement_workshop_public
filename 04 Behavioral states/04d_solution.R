@@ -19,20 +19,27 @@ dat2 <- dat1 %>% filter(id == "Salif Keita", year(timestamp) == 2009) %>%
   transform_coords(32630) %>% time_of_day() %>% 
   mutate(day = tod_ == "day")
 
+dat2
 # 3. Create a suitable data set for the `moveHMM` package and prepare data to
 # fit a HMM.
+
+# as_moveHMM(dat2): Will be in the next `amt` release
 
 dat3 <- data.frame(ID = 1, x = dat2$x_, y = dat2$y_, tmp = dat2$temperature, 
                    t = dat2$t_, day = dat2$day)
 dat.hmm <- prepData(dat3, type = "UTM")
 
+
 hist(dat.hmm$step)
-step.start.mean <- c(100, 2000)
-step.start.sd <- c(100, 2000)
+mean(dat.hmm$step, na.rm = TRUE)
+summary(dat.hmm$step)
+
+step.start.mean <- c(300, 3000)
+step.start.sd <- c(100, 700)
 
 hist(dat.hmm$angle)
 angle.start.mean <- c(0, 0)
-angle.start.sd <- c(1, 1)
+angle.start.sd <- c(.1, 1)
 
 # 4. Fit two model (`m1` and `m2`). For each model use two states. For the
 # second model use temperature as covariate that can effect the transition
@@ -41,6 +48,8 @@ angle.start.sd <- c(1, 1)
 m1 <- fitHMM(dat.hmm, nbStates = 2, 
        stepPar0 = c(step.start.mean, step.start.sd), 
        anglePar0 = c(angle.start.mean, angle.start.sd))
+
+table(viterbi(m1))
 
 plot(m1)
 
@@ -52,6 +61,16 @@ m2 <- fitHMM(dat.hmm, nbStates = 2, formula = ~ tmp,
        anglePar0 = c(angle.start.mean, angle.start.sd))
 
 plot(m2)
+m2
 
+# Check with residuals
+r1 <- pseudoRes(m1)
+r2 <- pseudoRes(m2)
+qqnorm(r1$stepRes)
+qqline(r1$stepRes)
+qqnorm(r2$stepRes)
+qqline(r2$stepRes)
+
+# Check with AIC
 AIC(m1)
 AIC(m2)

@@ -1,0 +1,30 @@
+---
+title: "HMM Exercise"
+author: "Johannes Signer"
+date: "26 January 2022"
+output: 
+  html_document:
+    theme: null
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Let's apply what we've learned about integrated step-selection functions. Refer to the lecture slides (<a href="06a_lecture.pdf" target="_blank" rel="noopener noreferrer">06a_lecture.pdf</a>) and the walkthrough code (`06b_walkthrough.R`) as a refresher.
+
+We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.
+
+If you don't have your own data, you can use example data built into `amt`. 
+
+
+## Instructions
+
+1. Load the `amt_fisher` dataset (it is shipeed with `amt` and you can get it with `data(amt_fisher)` or read it from the csv file `data/fisher.csv`). If you're working with your own data, format it as a `track_xyt` object using `amt::make_track()`.
+2. Filter all data points for  `Leroy` and resample the data to 30 min. 
+3. Use `Leroy` and create 15 random steps for each observed step. 
+4. Extract covariates at the end of each step for elevation. A raster with the elevation data is also shipped with `amt` and you can get the elevation by executing `data(amt_fisher_covar)`.  This returns a list with three covariates, we are only interested in elevation. To access elevation you can use: `amt_fisher$elevation`.
+5. Fit a SSF an SSF, where you use elevation as the only covariate.
+6. What is the log-RSS for a step ending at different elevations. Choose a suiteable range of elevations.
+7. Finally fit an `iSSF` where you include in addition to `elevation` also the step length the log of the step length and the cosine of the turn angle.
