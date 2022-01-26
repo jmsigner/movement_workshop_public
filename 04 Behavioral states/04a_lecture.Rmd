@@ -34,11 +34,7 @@ theme_set(theme_light())
 -----
 
 
-<<<<<<< HEAD
 ```{r, fig.cap="Source: Edelhoff et al. 2016", echo = FALSE, out.width="50%"}
-=======
-```{r, fig.cap="Source: Michelot et al. 2016", echo = FALSE, out.width="50%"}
->>>>>>> 02aa73349e7ab4915e382b8db2523e421fad34f1
 knitr::include_graphics("img/edel.png")
 ```
 

@@ -173,7 +173,7 @@ legend("topright", pch = 16, col = 1:3,
 # and true hourly locations.
 
 (mcp_area_sim <- st_coordinates(sim_pts) %>% 
-    make_track(X, Y, crs = 5070) %>% 
+    make_track(X, Y, crs = 32612) %>% 
     hr_mcp() %>% 
     hr_area(units = TRUE) %>% 
     mutate(area = units::set_units(area, "km2")) %>% 
@@ -217,7 +217,7 @@ sim_iter <- function(model) {
   lns <- crw_as_sf(sim_tracks, ftype = "LINESTRING")
   # Convert to track_xy and fit 95% MCP
   mcp <- st_coordinates(pts) %>% 
-    make_track(X, Y, crs = 5070) %>% 
+    make_track(X, Y, crs = 32612) %>% 
     hr_mcp() %>% 
     hr_area(units = TRUE) %>% 
     mutate(area = units::set_units(area, "km2")) %>% 

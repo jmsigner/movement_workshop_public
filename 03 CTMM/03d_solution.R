@@ -27,9 +27,9 @@ dat <- read_csv("data/elephants.csv") %>%
 
 head(dat)
 
-# Subset by removing entire months of May and June
+# Subset by removing entire months of June
 obs <- dat %>% 
-  filter(!month(t_) %in% 6)
+  filter(month(t_) != 6)
 
 plot(obs$t_)
 
@@ -74,7 +74,7 @@ sim_iter <- function(m) {
   lns <- crw_as_sf(sim_tracks, ftype = "LINESTRING")
   # Convert to track_xy and fit 90% KDE
   kde <- st_coordinates(pts) %>% 
-    make_track(X, Y, crs = 5070) %>% 
+    make_track(X, Y, crs = 32630) %>% 
     hr_kde(levels = 0.9) %>% 
     hr_area(units = TRUE) %>% 
     mutate(area = units::set_units(area, "km2")) %>% 
@@ -91,7 +91,7 @@ sim_iter <- function(m) {
 # Takes about 80 sec
 set.seed(123)
 system.time({
-  mult_imp <- replicate(50, sim_iter(m = mod), simplify = FALSE)
+  mult_imp <- replicate(25, sim_iter(m = mod), simplify = FALSE)
 })
 
 # Pull out KDE areas and lines
