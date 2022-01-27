@@ -222,12 +222,17 @@ simulate_track <- function(
   ##
   if (FALSE) {
 
-    wx = formula
-    coefficients = coefs
-    start = c(5000, 5000)
-    spatial.covars = lscp
+    wx = sim.formula
+    coefficients = sim.coefs
+    start = start1
+    spatial.covars = covar.sim
     max.dist = 500
     n = 10
+    as.track = TRUE
+    delta.time <- hours(2)
+    direction = 0
+    temporal.covars = NULL
+    start <- start
   }
   ###
 

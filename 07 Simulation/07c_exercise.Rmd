@@ -1,0 +1,20 @@
+---
+title: "Simulation Exercise"
+author: "Johannes Signer"
+date: "24 January 2022"
+output: 
+  html_document:
+    theme: null
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Simulate a binary landscape encoded 0 and 1. This could be for example a matrix of forest and non-forest. Like we did this already in `6b_walkthrough.R`. 
+
+2. Create two different dispersal kernels: 
+  i. The animal moves with constant step-lengths that follows a gamma distribution with shape 2 and scale 5. 
+  ii. The animal moves with the same step-length distribution as in i) but now shows a preference for habitat 1.
+  iii. The animal moves with the same step-length distribution as in i) but now shows a preference for habitat 1 and high directional persistence (kappa = 5).
