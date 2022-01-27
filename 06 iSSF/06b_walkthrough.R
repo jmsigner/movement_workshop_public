@@ -40,7 +40,7 @@ raster::plot(forest)
 # and elevation
 ele <- NLMR::nlm_gaussianfield(dim, dim)
 ele[] <- scales::rescale(ele[], c(0, 500))
-plot(ele)
+raster::plot(ele)
 
 covars <- raster::stack(forest, ele)
 names(covars)
@@ -48,7 +48,7 @@ names(covars) <- c("forest", "elevation")
 names(covars)
 
 # ... Movement
-curve(dexp(x, rate = 0.3), from = 0, to = 20)
+curve(dexp(x, rate = 0.2), from = 0, to = 20)
 
 dat1 <- simulate_ssf(
   n_steps = 500, n_ch = 10, l = 0.2, xy0 = c(dim/2, dim/2), 
@@ -66,10 +66,12 @@ points(dat1)
 # ... Creating steps ----
 
 # From points to steps
-dat1 %>% steps() 
+dat1 %>% steps() # steps_by_burst()
 
 # Adding random steps. 
 tmp <- dat1 %>% steps() %>% random_steps() 
+
+tmp %>% print(n = 15)
 
 # Check the step-length and turn-angle distribution that was fitted to the data.
 # We see later how we can plot this.
@@ -84,6 +86,8 @@ dat1 %>% steps() %>% random_steps(n_control = 20)
 dat1 %>% steps() %>% 
   random_steps() %>% 
   extract_covariates(covars) 
+
+covars
 
 # Finally, we can some additional covariates
 dat1 %>% steps() %>% 
@@ -134,7 +138,7 @@ sl_distr(ssf.dat)$params
 curve(dgamma(x, shape = sl_distr_params(ssf.dat)$shape, 
              scale = sl_distr_params(ssf.dat)$scale), from = 0, to = 30
 )
-curve(dexp(x, rate = 0.3), add = TRUE, col = "red")
+curve(dexp(x, rate = 0.2), add = TRUE, col = "red")
 
 
 

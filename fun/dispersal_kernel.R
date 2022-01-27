@@ -192,7 +192,7 @@ kernel_finish <- function(
 dispersal_kernel <- function(
   wx, coefficients, start,
   spatial.covars, temporal.covars = NULL,
-  direction = 0, max.dist = 100, return.raster = FALSE, normalize = TRUE, correct = TRUE) {
+  direction = 0, max.dist = 100, return.raster = FALSE, normalize = TRUE, correct = FALSE) {
 
   dk0 <- kernel_setup(spatial.covars, max.dist = max.dist, position = start)
   dk1 <- kernel_shift(dk0, dxy = start)

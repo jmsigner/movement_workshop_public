@@ -8,8 +8,10 @@
 #' @param resc `[RasterLayer]` The environmental covariates.
 
 simulate_ssf <- function(n_steps, n_ch, l = 1, coef, xy0, resc) {
+  
   sl <- rexp(n_steps * n_ch, rate = l)
   ta <- runif(n_steps * n_ch, -pi, pi)
+  
   steps <- rep(1:n_steps, each = n_ch)
   x_0 <- xy0[1]
   y_0 <- xy0[2]

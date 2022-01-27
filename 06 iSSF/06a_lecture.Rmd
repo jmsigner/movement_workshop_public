@@ -29,16 +29,10 @@ theme_set(theme_light())
 
 # Availability matters
 
-<<<<<<< HEAD
 - Habitat-selection function assume that each point in the availability domain (e.g., the home range) is available to the animal at any given point in time. 
 - This assumption might be met with relatively coarse data (large sampling rates), but the assumption becomes unrealistic for data sets with a higher temporal resolution. 
 
 - In addition SSFs model account for serial autocorrelation.
-=======
-- HSF (in particular RSFs) assume that each point in the availability domain (e.g., the home range) is available to the animal at any given point in time. 
-- This assumption might be met with relatively coarse data (large sampling rates), but the assumption becomes unrealistic for data sets with a higher temporal resolution. 
-
->>>>>>> c8cace125a3405d52965ef48438bccb6a7972990
 
 # Step-selection function (SSF)
 

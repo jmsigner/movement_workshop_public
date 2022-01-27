@@ -176,7 +176,7 @@ pre code {
 <p><br></p>
 <p>Let’s apply what we’ve learned about HSFs. Refer to the lecture slides (<a href="08a_lecture.html" target="_blank" rel="noopener noreferrer">08a_lecture.html</a>) and the walkthrough code (<code>08b_walkthrough.R</code>) as a refresher.</p>
 <p>We encourage you to use your own data for this exercise. We will be available while you are working to answer any questions.</p>
-<p>If you don’t have your own data, you can use some sample coyote data from UT. These data were published by Mahoney et al. (2017) <a href="https://www.datarepository.movebank.org/handle/10255/move.590">here</a>. These data were originally used in this manuscript:</p>
+<p>If you don’t have your own data, you can use some sample cougar data from UT. These data were published by Mahoney et al. (2017) <a href="https://www.datarepository.movebank.org/handle/10255/move.590">here</a>. These data were originally used in this manuscript:</p>
 <blockquote>
 <p>Mahoney PJ, Young JK (2016) Uncovering behavioural states from animal activity and site fidelity patterns. Methods in Ecology and Evolution 8(2): 174–183. <a href="https://doi.org/10.1111/2041-210X.12658">doi:10.1111/2041-210X.12658</a></p>
 </blockquote>
@@ -193,10 +193,13 @@ pre code {
 library(tidyverse)
 library(raster)
 
-# Location data as &#39;track_xyt&#39;
+# Location data
 dat &lt;- read_csv(&quot;data/coyote_cougar.csv&quot;) %&gt;% 
-  # Subset to just the coyote
-  filter(id == &quot;C028&quot;)
+  # Subset to just cougar F53
+  filter(id == &quot;F53&quot;)
+
+# Set the timezone
+tz(dat$t_) &lt;- &quot;US/Mountain&quot;
 
 # Habitat data as stack
 hab &lt;- stack(&quot;data/coyote_cougar_habitat.tif&quot;)
@@ -206,19 +209,22 @@ names(hab) &lt;- c(&quot;elevation&quot;, &quot;trees&quot;, &quot;biomass&quot;
 <ol style="list-style-type: decimal">
 <li><p>Load your data or the example data. Subset to a single individual.</p>
 <ul>
-<li>Recall that iSSFs assume a constant step duration. Make sure your data are (approximately) regularly sampled before you continue.</li>
+<li>Recall that iSSFs assume a constant step duration. Make sure your data are (within a reasonable tolerance) regularly sampled before you continue.</li>
 <li>You will want a fairly large sample size as your model grows in parameters by including interaction terms.</li>
 </ul></li>
-<li><p>Before you get started, consider your habitat variables.</p>
+<li><p>Before you get started, consider your habitat variables and your movement variables.</p>
 <ul>
 <li>Decide <em>a priori</em> whether each variable represents a resource, risk, or condition.</li>
 <li>Should any of your habitat covariates interact with each other? Why?</li>
 <li>Which of your covariates might affect the movement process?</li>
+<li>Should any of your covariates interact with a temporal variable? Might selection change between seasons? Might selection change between times of day?</li>
 <li>Include your thoughts about each variable as comments in your analysis script.</li>
 </ul></li>
 <li><p>Fit an iSSF, with at least one interaction.</p>
 <ul>
 <li>Make sure the form of each variable matches your <em>a priori</em> hypotheses about it from above. Pay careful attention to understand what your interaction terms mean.</li>
+<li>You might also be interested in fitting more than one model. <em>E.g.</em>, maybe you want to compare different seasons or different years.</li>
+<li>It’s up to you whether to decide if you’d rather capture effects with interactions or separate models.</li>
 </ul></li>
 <li><p>Make at least one plot showing the RSS (or log-RSS) for one of your habitat variables.</p>
 <ul>
@@ -226,7 +232,7 @@ names(hab) &lt;- c(&quot;elevation&quot;, &quot;trees&quot;, &quot;biomass&quot;
 </ul></li>
 <li><p>Make at least one plot showing the step-length or turn-angle distribution for your animal.</p>
 <ul>
-<li>If you have interactions with step-length or turn-angle, make sure you show this.</li>
+<li>If you have interactions with step-length or turn-angle, try to show this.</li>
 </ul></li>
 </ol>
 <br>

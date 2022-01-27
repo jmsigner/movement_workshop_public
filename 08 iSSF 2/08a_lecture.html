@@ -181,7 +181,7 @@ This works for any covariate, including categorical covariates (which are repres
 
 ## Parameters as functions
 
-.center[ We can think of the parameters in an interaction as linear functions of each other.] 
+.center[ We can think of the parameters in an interaction as linear functions of covariates.] 
 
 ---
 
@@ -453,6 +453,42 @@ Resource complementarity `\((\beta_{intxn} &gt; 0)\)`.
 
 ---
 
+## Habitat at start or end of step
+
+Recall that all the steps in a stratum have the same starting location.
+
+.center[ ![Thurjfell et al. 2014 Fig 1](../06 iSSF/img/ssf1.png) ]
+
+---
+
+## Habitat at start or end of step
+
+(i)SSFs compare use vs. availability within a stratum.
+
+.center[ ![Thurjfell et al. 2014 Fig 1](../06 iSSF/img/ssf1.png) ]
+
+---
+
+## Habitat at start or end of step
+
+If there is no variation in a habitat variable within a stratum, then we cannot estimate a slope for that habitat variable.
+
+So we cannot include habitat at the start of a step by itself.
+
+---
+
+## Habitat at start or end of step
+
+However, we can include an **interaction** between a habitat at the start of a step and some other feature of that step which varies within a stratum.
+
+--
+
+*E.g.*, an interaction between land cover at the start of a step and land cover at the end of the step would help us estimate transition probabilities between land cover types.
+
+*E.g.*, is it more likely for a step to end in forest, given that it started in forest?
+
+---
+
 class: center, middle
 # Interactions between Movement and Habitat Variables
 
@@ -568,6 +604,16 @@ We can do the same thing with the concentration parameter of the von Mises distr
 *E.g.*, foraging animals (at the right timescale) typically have turn angles concentrated around `\(\pm \pi\)`, whereas traveling animals typically have turn angles concentrated around 0.
 
 .center[ ![Continuous habitat turn angle distr](figs/updated_ta_cont.png) ]
+
+---
+
+## Habitat at the start or end of the step?
+
+If we think that a habitat affects movement, we often include an interaction between the habitat at the **start** of the step interacting with the movement parameters.
+
+*E.g.* an animal starting in dense vegetation won't be able to make it very far.
+
+Contrast that with an animal choosing an end point *because* of the habitat.
 
 ---
 class: center, middle
