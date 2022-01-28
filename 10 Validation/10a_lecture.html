@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Habitat Selection Model Validation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brian J. Smith" />
+    <meta name="date" content="2022-01-28" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="../css/default.css" type="text/css" />
+    <link rel="stylesheet" href="../css/default-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+class: center, middle, inverse
+
+# Habitat Selection Model Validation
+## "Is my model any good?"
+
+Brian J. Smith  
+28 January 2022
+
+*Analysis of Animal Movement Data in R*  
+J. Signer &amp; B. Smith  
+
+---
+class: center, middle
+
+# Concepts
+
+---
+
+## Model validation
+
+&gt; "Model validation is the process of assessing agreement between observations and fitted or predicted values."
+
+&amp;#8212; Fieberg et al. (2018)
+
+
+???
+
+In other words, "How well does my model do its job?"
+
+Note that this implies you have defined your model's job. We can use models for many purposes, so your model validation needs to be tailored to the objectives of your study.
+
+---
+
+## Calibration
+
+&gt; "When there is close agreement between observed and fitted/predicted values, we say the model is well calibrated; calibration therefore refers to steps taken to improve agree- ment between observed and predicted values."
+
+&amp;#8212; Fieberg et al. (2018)
+
+---
+
+## Discrimination
+
+&gt; "Discrimination ... describes a model’s ability to rank sample units in terms of their likely outcomes."
+
+&amp;#8212; Fieberg et al. (2018)
+
+---
+
+## Calibration vs. discrimination
+
+If you take care to fit a "good" model, you can wind up with a model that is *both* well-calibrated and able to discriminate. However, there are situations where this is not the case.
+
+---
+
+## Calibration vs. discrimination
+
+### Well-calibrated, poor discrimination
+
+Ellner et al. (2002) showed that models used for population viability analyses (PVA) are often too precise to rank individual populations in terms of extinction risk (*i.e.*, discriminate), even though on average the ensemble of models is unbiased (*i.e.*, well-calibrated).
+
+---
+
+.center[ 
+![Ellner et al. 2002 Fig. 1](figs/Ellner_etal_2002_Fig1.png) 
+.note[Fig. 1 from Ellner et al. (2002)]
+]
+
+???
+
+Left-panel shows accuracy of the ensemble predictions -- there is good agreement between PVA-predicted probability of decline and the proportion of populations actually declining. *I.e.*, the model is well-calibrated.
+
+Right-panel shows the lack of precision for individual population predictions. Even though this model is well-calibrated, you cannot rank the individual populations in terms of extinction probability. *I.e.*, the model has poor discrimination.
+
+---
+
+## Calibration vs. discrimination
+
+### Poor calibration, good discrimination
+
+Counts of species, uncorrected for imperfect detection, are known to be
+biased low. However, these population indices might rank sites well in terms of true abundance, as long as detection probability is similar among sites.
+
+---
+
+.center[
+![Population index vs. true abundance](figs/site_counts.png)
+
+.note[This population index is a biased estimate of abundance, but sites are still ranked correctly.]
+]
+
+???
+
+Blue line is 1:1 line. If these estimates were unbiased, points would be scattered about the line.
+
+---
+
+## Goodness-of-fit
+
+In general, how well a model fits the data.
+
+Often measured with R&lt;sup&gt;2&lt;/sup&gt; (for ordinary linear models) or pseudo-R&lt;sup&gt;2&lt;/sup&gt; (for generalized linear models).
+
+Generally interpreted as the percentage of variation in the data explained by the model.
+
+???
+
+The general interpretation is true for ordinary linear regression and Gaussian GLMs. For other GLMs, residuals do not have the same interpretation as in the Gaussian case, and instead model fitting is based on likelihood.
+
+We use deviance as the generalization of residuals in GLMs, and so pseduo-R&lt;sup&gt;2&lt;/sup&gt; is sometimes interpreted as % of deviance explained.
+
+Note that not all pseudo-R&lt;sup&gt;2&lt;/sup&gt; metrics range from 0 to 1. Some have a maximum possible value &lt; 1.
+
+---
+
+## Internal vs. external validity
+
+- Internal validity: measured by comparing the fitted values of the model to the data, *i.e.*, validation using the same data used to fit the model.
+  - In-sample prediction
+
+- External validity: measured by comparing model predictions to observed values in a new dataset, *i.e.*, validation using an independent dataset.
+  - Out-of-sample prediction
+
+---
+class: center, middle
+# Methods for HSFs
+
+---
+
+## Methods for HSFs 
+
+- Pseudo-R&lt;sup&gt;2&lt;/sup&gt;
+
+- Area Under the Curve (ROC AUC)
+
+- "Boyce method"
+
+- Used-habitat calibration plots
+
+---
+
+## Pseudo-R&lt;sup&gt;2&lt;/sup&gt;
+
+- Calculated using the likelihood of the fitted model compared with the likelihood of a null (intercept-only) model.
+
+- Measure of internal validity.
+
+- Easy to calculate, lots of R packages with various versions.
+
+- Makes a lot of sense for a model fit using Poisson regression.
+
+- Large body of literature about this for logistic regression, but that's not really the model we want to evaluate.
+
+---
+
+## ROC AUC
+
+- AUC = "Area Under the Curve"
+
+- ROC = "Receiver-Operator Curve"
+
+- Measures the trade-off between sensitivity and specificity for a binary predictor.
+
+- Can be used as a measure of internal validity or external validity.
+
+- Good for evaluating logistic regression, but again, that's not really the model we want to fit.
+
+- Typically bound between 0.5 (random guess) and 1 (perfect prediction).
+
+---
+
+## ROC AUC
+
+An intuitive interpretation of AUC for HSFs is:
+
+1. Randomly select 1 used point from the dataset `\((x_u)\)`.
+2. Randomly select 1 available point from the dataset `\((x_a)\)`.
+3. Calculate value of `\(w(x)\)` for each point.
+4. `\(AUC = Pr(w(x_u) &gt; w(x_a))\)`
+
+*I.e.*, it is the probability under our model that our used location is in "better" habitat (according to our model) than what is available.
+
+---
+
+## Boyce method
+
+.center[ ![Boyce et al. 2002](figs/Boyce_etal_2002_title.png)
+
+.note[Based on Boyce et al. (2002)]
+]
+
+
+---
+
+## Boyce method
+
+More directly related to the IPP because it evaluates density of points rather than a binary classifier.
+
+- Breaks habitats into bins and estimates `\(w(x)\)` for the mean values of the bin.
+
+- Calculates correlation between number of used locations in each bin `\(w(x)\)` for that bin.
+
+- Uses Spearman's (rank) correlation.
+
+---
+
+## Used-habitat calibration plots
+
+- Graphical method for calibration.
+
+- Good for identifying missing covariates, non-linearity, and multicollinearity.
+
+- Much more detail of this method later.
+
+---
+class: center, middle
+
+# Methods for iSSFs
+
+---
+
+## Methods
+
+- Pseudo-R&lt;sup&gt;2&lt;/sup&gt;
+
+- "Modified Boyce method" (?)
+
+- Other methods for conditional logistic regression?
+
+  - Concordance
+  
+- Used-habitat calibration plots
+
+---
+## Pseudo-R&lt;sup&gt;2&lt;/sup&gt;
+
+- Calculated using the likelihood of the fitted model compared with the likelihood of a null (intercept-only) model.
+
+- Not clear that the pseudo-R&lt;sup&gt;2&lt;/sup&gt; of a Cox proportional hazards model is interpretable as the % deviance explained by an (i)SSF.
+
+---
+
+## Modified Boyce method
+
+.center[ ![Fortin et al. 2009](figs/Fortin_etal_2009_title.png)
+
+.note[Based on Fortin et al. (2009)]
+]
+
+---
+
+## Modified Boyce method
+
+- Fortin et al. (2009) were evaluating RSFs fit with conditional logistic regression (with a single day of locations comprising a stratum).
+
+  - Similar to an SSF
+  
+- Built the RSF for 80% of strata, withholding 20% for out-of-sample validation.
+
+- Ranked all observations within a stratum by predicted `\(w(x)\)`, then grouped the observed locations according to their rank.
+
+- Calculated Spearman's (rank) correlation between the ranking and the number of observed locations in the ranking.
+
+---
+
+## Concordance
+
+- Generalization of AUC.
+
+- Most used measure of goodness-of-fit for survival models.
+
+- Easy to calculate.
+
+- Unclear that this is very relevant to the IPP.
+
+---
+
+## Used-habitat calibration plots
+
+- Can be used for both HSFs and (i)SSFs.
+
+---
+class: center, middle
+# Used-habitat Calibration Plots
+
+---
+
+## Used-habitat calibration plots
+
+.center[ ![Fieberg et al. 2018](figs/Fieberg_etal_2018_title.png)
+
+.note[Proposed by Fieberg et al. (2018)]
+]
+
+---
+
+## Used-habitat calibration plots
+
+How well does our model predict the characteristics of used locations?
+
+---
+class: center, middle
+
+![Fieberg et al. 2018 Fig. 3](figs/Fieberg_etal_2018_Fig3.png)
+
+---
+
+## Used-habitat calibration plots
+
+First, split data into training and testing datasets.
+
+- Summarize used and available distributions of each environmental variable.
+
+- Fit a candidate model. Extract the `\(\beta\)`s and the variance-covariance matrix `\((\boldsymbol\Sigma)\)`.
+
+...
+
+---
+
+## Used-habitat calibration plots
+
+- For many (bootstrap) iterations:
+
+  - Draw new values of all `\(\beta\)`s (don't forget the covariance).
+  - Calculate `\(w(x)\)` for the testing data with the sampled `\(\beta\)`s.
+  - Sample `\(n_u^{test}\)` used locations from the test data, with probability proportional to `\(w(x)\)` calculated in previous.
+  - Summarize predicted distribution of covariates at used locations.
+  
+- Compare observed and predicted distributions.
+
+
+---
+
+## Used-habitat calibration plots
+
+UHC plots can help identify missing covariates.
+
+.center[ ![Fieberg et al. 2018 Fig. 4](figs/Fieberg_etal_2018_Fig4.png)
+
+.note[Fig. 4 from Fieberg et al. (2018)]
+]
+
+???
+
+If black line (observed distribution) falls outside of gray envelope (predicted distribution), then the model needs calibrating.
+
+In this figure, the correct formula is `~ elev + precip`. Left panel shows model missing precipitation and corresponding incorrect predicted distribution. Right panel shows correct model.
+
+Red line is available distribution.
+
+---
+
+## Used-habitat calibration plots
+
+UHC plots can help identify incorrect functional form.
+
+.center[ ![Fieberg et al. 2018 Fig. 5](figs/Fieberg_etal_2018_Fig5.png)
+
+.note[Fig. 5 from Fieberg et al. (2018)]
+]
+
+???
+
+Correct model should have a quadratic term (left).
+
+---
+
+class: inverse, center, middle
+
+# Questions?
+
+---
+
+class: small-font
+
+# References
+
+
+&lt;a name=bib-Boyce2002&gt;&lt;/a&gt;[Boyce, M. S., P. R. Vernier, S. E. Nielsen,
+et al.](#cite-Boyce2002) (2002). "Evaluating resource selection
+functions". In: _Ecological Modelling_ 157, pp. 281-300.
+
+&lt;a name=bib-Ellner2002&gt;&lt;/a&gt;[Ellner, S. P., J. Fieberg, D. Ludwig, et
+al.](#cite-Ellner2002) (2002). "Precision of Population Viability
+Analysis". In: _Conservation Biology_ 16.1, pp. 258-261.
+
+&lt;a name=bib-Fieberg2018&gt;&lt;/a&gt;[Fieberg, J. R., J. D. Forester, G. M.
+Street, et al.](#cite-Fieberg2018) (2018). "Used-habitat calibration
+plots: A new procedure for validating species distribution, resource
+selection, and step-selection models". In: _Ecography_ 41, pp. 737-752.
+DOI: [10.1111/ecog.03123](https://doi.org/10.1111%2Fecog.03123).
+
+&lt;a name=bib-Daniel2009&gt;&lt;/a&gt;[Fortin, D., M. E. Fortin, H. L. Beyer, et
+al.](#cite-Daniel2009) (2009). "Group-size-mediated habitat selection
+and group fusion-fission dynamics of bison under predation risk". In:
+_Ecology_ 90.9, pp. 2480-2490. DOI:
+[10.1890/08-0345.1](https://doi.org/10.1890%2F08-0345.1).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

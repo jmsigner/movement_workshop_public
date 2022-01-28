@@ -254,6 +254,9 @@ head(gps)
 plot(hab$forage)
 points(gps$x, gps$y, pch = 16, cex = 0.5)
 
+# Save our simulated data for a later module.
+write.csv(gps, "05 HSF/module05_HSF_data.csv", row.names = FALSE)
+
 # Fitting an HSF with 'amt' ----
 # Now that we've simulated these data, let's fit an HSF.
 mod_dat <- gps %>% 

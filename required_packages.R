@@ -15,7 +15,7 @@ required.packages <- c(
   "conflicted",
   "mvtnorm",
   "scales",
-  "pscl",
+  "rcompanion",
   "pROC",
   "wrswoR", 
   "ResourceSelection"
