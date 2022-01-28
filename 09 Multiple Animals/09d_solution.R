@@ -17,6 +17,7 @@ trk <- amt_fisher
 
 
 summarize_sampling_rate_many(trk, "id")
+
 dat1 <- trk %>% nest(data = -id)
 
 dat2 <- dat1 %>% 
@@ -67,7 +68,7 @@ dat.ssf2 <- dat.ssf %>% select(ssf, id) %>% unnest(cols = ssf) %>%
 m.ssf0 <- fit_ssf(case_ ~ elevation + strata(step_id1_), data = dat.ssf2)
 
 # Apply the poisson trick
-m.ssf1 <- glmmTMB(case_ ~ -1 + elevation + (1|step_id1_) + (0 + elevation|id),
+m.ssf1 <- glmmTMB(case_ ~ -1 + elevation + (1 | step_id1_) + (0 + elevation|id),
                   family = poisson(), 
                   data = dat.ssf2, doFit = FALSE)
 

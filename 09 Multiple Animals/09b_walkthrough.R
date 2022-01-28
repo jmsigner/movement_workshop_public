@@ -26,18 +26,25 @@ library(broom.mixed)
 
 data(goats, package = "ResourceSelection")
 
+head(goats)
+
 # Here we ignore individuals
 m1 <- glmmTMB(STATUS ~ ELEVATION + SLOPE, 
               data = goats, family = binomial())
 
 # This is the random intercept model
-m2 <- glmmTMB(STATUS ~ ELEVATION + SLOPE + (1 | ID), 
+m2 <- glmmTMB(STATUS ~ 1, ELEVATION + SLOPE + (1 | ID), 
               data = goats, family = binomial())
 
 # This is a random slope and intercept model
 m3 <- glmmTMB(STATUS ~ ELEVATION + SLOPE + 
-                (ELEVATION + SLOPE | ID),
+                (0 + SLOPE | ID) +
+                (0 + ELEVATION | ID),
               data = goats, family = binomial())
+
+summary(m1)
+summary(m2)
+summary(m3)
 
 bind_rows(
   tidy(m1, conf.int = TRUE) %>% mutate(what = "glm"),
@@ -87,7 +94,8 @@ raster::plot(ele)
 points(dat1)
 
 # Now let us simulate 10 animals from the same populations. 
-coefs <- rmvnorm(n = 10, mean = c(0.01, -0.5), sigma = diag(c(0.00001, 0.2)))
+coefs <- rmvnorm(n = 10, mean = c(0.01, -0.5), sigma = diag(c(0.01, 0.2)))
+
 dat <- map(1:10, ~ {
   simulate_ssf(
     n_steps = 500, n_ch = 10, l = 0.5, xy0 = c(dim/2, dim/2), 
@@ -96,6 +104,7 @@ dat <- map(1:10, ~ {
 })
 
 dat1 <- dat %>% bind_rows()
+dat1
 dat1 %>% ggplot(aes(x_, y_, col = factor(id))) + geom_point() + coord_equal()
 
 # HSF ----
@@ -110,15 +119,37 @@ dat.hsf <- dat1 %>% nest(data = -id) %>%
 dat.hsf
 
 # ... Global model ----
-
 m1 <- glm(case_ ~ forest + elevation, data = dat.hsf, weights = weight, family = binomial())
 summary(m1)
 
 # ... Individual model ----
-m2 <- dat.hsf %>% nest(dat = -id) %>% 
-  mutate(mod = map(dat, ~ glm(case_ ~ forest + elevation, data = ., weights = weight, family = binomial()) %>% 
+m2.dat <- dat.hsf %>% nest(dat = -id) 
+
+
+# Dont do!
+glm(case_ ~ forest + elevation, data = m2.dat$dat[[1]], weights = weight, family = binomial())
+glm(case_ ~ forest + elevation, data = m2.dat$dat[[2]], weights = weight, family = binomial())
+
+# Use loop
+res <- list()
+for (i in 1:length(m2.dat$dat)) {
+  res[[i]] <- glm(case_ ~ forest + elevation, data = m2.dat$dat[[i]], weights = weight, family = binomial())
+}
+res
+
+res <- lapply(1:10, function(i) glm(case_ ~ forest + elevation, data = m2.dat$dat[[i]], weights = weight, family = binomial()))
+res <- map(1:10, ~ glm(case_ ~ forest + elevation, data = m2.dat$dat[[.x]], weights = weight, family = binomial()))
+res <- map(m2.dat$dat, ~ glm(case_ ~ forest + elevation, data = .x, weights = weight, family = binomial()))
+
+res[[1]] %>% tidy()
+
+m2 <- m2.dat %>% 
+  mutate(mod = map(dat, ~ glm(case_ ~ forest + elevation, data = .x, weights = weight, family = binomial()) %>% 
                      tidy(conf.int = TRUE))) %>% 
   select(id, mod) %>% unnest(cols = mod)
+
+m2
+
 m2 %>% filter(term != "(Intercept)") %>% 
   ggplot(aes(x = term, y = estimate)) + geom_point(alpha = 0.4) +
   stat_summary(col = "red")
@@ -130,7 +161,7 @@ summary(m3)
 # ... Random  slope ----
 m4 <- glmmTMB(case_ ~ forest + elevation + (0 + forest | id) + 
                 (0 + elevation | id), 
-              data = dat.rsf, weights = weight, family = binomial())
+              data = dat.hsf, weights = weight, family = binomial())
 summary(m4)
 
 
@@ -144,6 +175,14 @@ confint(m1) # ignoring individual animals
 confint(m3) # Random intercept
 confint(m4) # Random slope
 
+coef(m1)
+fixef(m3)
+fixef(m4)
+
+diag(vcov(m1))
+(vcov(m3))
+diag(vcov(m4))
+
 
 # iSSF ----
 
@@ -154,6 +193,9 @@ dat.issf <- dat1 %>% nest(data = -id) %>%
   extract_covariates(covars) %>% 
   mutate(log_sl_ = log(sl_), sin_ta_ = sin(ta_), 
          step_id1_ = paste(id, step_id_, sep = "."))
+
+tail(dat.issf$step_id1_)
+
 
 # ... Poisson trick ----
 
@@ -200,7 +242,7 @@ m2 %>%
 # ... Random intercept & random slope ----
 
 m3 <- glmmTMB(case_ ~ -1 + forest + elevation + sl_ + log_sl_ + (1 |step_id1_) +
-                (0 + elevation | id) + (0 + forest | id), 
+                (0 + elevation | id) + (0 + forest | id) , 
                family = poisson(), data = dat.issf, doFit = FALSE)
 m3$parameters$theta[1] <- log(1e3)
 m3$mapArg <- list(theta = factor(c(NA, 1:2)))
@@ -250,3 +292,4 @@ coef.all %>% pivot_wider(names_from = "term", values_from = "estimate") %>%
   geom_line(aes(group = animal), col = "grey") +
   geom_point(aes(col = what)) +
   theme_light()
+
