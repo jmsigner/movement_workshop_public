@@ -17,7 +17,8 @@ required.packages <- c(
   "scales",
   "pscl",
   "pROC",
-  "wrswoR"
+  "wrswoR", 
+  "ResourceSelection"
 )
 
 # Suggested packages

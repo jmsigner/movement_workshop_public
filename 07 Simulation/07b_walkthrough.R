@@ -18,7 +18,7 @@ conflict_prefer("select", "dplyr")
 
 
 set.seed(1323)
-source("fun/dispersal_kernel.R")
+
 
 # Data ----
 dat <- amt_fisher %>% filter(name == "Ricky T")
@@ -26,11 +26,14 @@ summarize_sampling_rate(dat)
 dat <- dat %>% track_resample(rate = minutes(10), tolerance = seconds(60)) %>% 
   filter_min_n_burst()
 
+# Link to legend:  @TODO
 landuse <- raster("07 Simulation/data/landuse_study_area.tif")
 plot(landuse)
 
 wet <- landuse == 90
 wet
+plot(wet)
+names(wet)
 names(wet) <- "wet"
 wet
 
@@ -41,6 +44,11 @@ plot(water)
 
 covar <- stack(wet, water)
 covar
+
+plot(wet)
+points(dat)
+plot(amt::bbox(dat, buffer = 1e4, spatial = TRUE), add = TRUE)
+
 
 covar.animal <- crop(covar, amt::bbox(dat, buffer = 1e4, spatial = TRUE))
 plot(covar.animal)
@@ -71,6 +79,9 @@ summary(issf1)
 tentative.sl <- sl_distr(issf1)$params
 adjusted.sl <- update_sl_distr(issf1)$params
 
+tentative.sl
+adjusted.sl
+
 dev.off()
 curve(dgamma(x, shape = tentative.sl$shape, scale = tentative.sl$scale), col = "red", from = 0, to = 200)
 curve(dgamma(x, shape = adjusted.sl$shape, scale = adjusted.sl$scale), col = "blue", from = 0, to = 200, add = TRUE)
@@ -92,6 +103,7 @@ plot(tud)
 # ... Steady State UD ----
 ssud <- simulate_ud(movement_kernel = mk, habitat_kernel = hk, start = as.numeric(dat[1, c("x_", "y_")]), n = 1e7)
 plot(ssud)
+
 
 # Dynamic simulation ----
 
@@ -116,6 +128,11 @@ curve(dgamma(x, scale = 10, shape = 2), from = 0, to = 100,
 scale_to_sl(10)
 shape_to_log_sl(2)
 
+dk1 <- dispersal_kernel(
+  ~ sl_ + log_sl_, 
+  coefficients = c("sl_" = -0.1, "log_sl_" = 1), 
+  spatial.covars = lscp, start = c(0, 0), 
+  return.raster = FALSE, max.dist = 70)
 
 dk1 <- dispersal_kernel(
   ~ sl_ + log_sl_, 
@@ -124,17 +141,18 @@ dk1 <- dispersal_kernel(
   return.raster = TRUE, max.dist = 70)
 plot(dk1)
 
+kappa_to_cos_ta(10)
 dk2 <- dispersal_kernel(
   ~ cos_ta_, 
-  coefficients = c("cos_ta_" = 3), 
+  coefficients = c("cos_ta_" = 10), 
   spatial.covars = lscp, start = c(0, 0), 
-  return.raster = TRUE, max.dist = 70)
+  return.raster = TRUE, max.dist = 70, direction = -pi/2)
 plot(dk2)
 
 dk3 <- dispersal_kernel(
   ~ sl_ + log_sl_ + cos_ta_, 
   coefficients = c("sl_" = -0.1, "log_sl_" = 1, "cos_ta_" = 3), 
-  spatial.covars = lscp, start = c(0, 0), direction = 0, 
+  spatial.covars = lscp, start = c(0, 0), direction = pi/3, 
   return.raster = TRUE, max.dist = 70)
 plot(dk3)
 
@@ -143,6 +161,7 @@ dk4 <- dispersal_kernel(
   coefficients = c("hab_end" = 0.4), 
   spatial.covars = lscp, start = c(0, 0), 
   return.raster = TRUE, max.dist = 70)
+plot(lscp)
 plot(dk4)
 
 dk5 <- dispersal_kernel(
@@ -163,7 +182,6 @@ plot(dk6)
 dk6 <- dispersal_kernel(
   ~ cos_ta_ + hab_end + cos_ta_:hab_start, 
   coefficients = c("cos_ta_" = 3, "hab_end" = 0, "cos_ta_:hab_start" = -2.9), 
-  spatial.covars = lscp, start = c(3, 0), 
   return.raster = TRUE, max.dist = 70)
 plot(dk6)
 
@@ -192,7 +210,6 @@ curve(dgamma(x, shape = sl.w.dist100$shape[2], scale = sl.w.dist100$scale[2]), c
 curve(dgamma(x, shape = sl.w.dist0$shape, scale = sl.w.dist0$scale), col = "red", from = 0, to = 200, add = TRUE)
 
 # Now lets create a dispersal kernel for these two situation
-
 cfs <- coef(issf2)
 
 # What could the maximum distance be?
@@ -209,6 +226,8 @@ sim.formula <- ~
   # Interactions
   sl_:waterdist_start + log_sl_:waterdist_start
 
+sim.formula
+
 sim.coefs <- c(
   # Habitat selection
   "wet_end" = unname(cfs["wet_end"]), 
@@ -224,7 +243,7 @@ sim.coefs <- c(
 dk5 <- dispersal_kernel(
   sim.formula,
   coefficients = sim.coefs, 
-  spatial.covars = covar.sim, start = start, 
+  spatial.covars = stack(covar.sim), start = start, 
   return.raster = TRUE, max.dist = 350)
 
 plot(dk5)
@@ -233,7 +252,7 @@ start1 <- c(1779700, 2412500)
 dk5a <- dispersal_kernel(
   sim.formula,
   coefficients = sim.coefs, 
-  spatial.covars = covar.sim, start = start1, 
+  spatial.covars = stack(covar.sim), start = start1, 
   return.raster = TRUE, max.dist = 350)
 
 plot(dk5a)

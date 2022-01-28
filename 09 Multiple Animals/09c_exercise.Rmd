@@ -1,0 +1,26 @@
+---
+title: "Multiple Animals Exercise"
+author: "Johannes Signer"
+date: "28 January 2022"
+output: 
+  html_document:
+    theme: null
+    css: "../css/exercises.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1. Load the fisher data from the `amt` package and sample all individuals to the same sampling rate. You can use the function `summarize_sampling_rate_many()` to figure out a suitable sampling rage. For the actual resampling you need a loop/nesting or alike. 
+
+2. Fit four HSFs using only the covariate elevation. Fit the following three models:
+    1. Ignore individuals
+    2. A model with a random intercept only
+    3. A model only with a random slope
+
+3. Use the same data set, but now fit an SSF. Fit two different models:
+    1. A conditional logistic regression ignoring different individuals.
+    2. Fit a model where you use the Poisson trick to account for individual variation. 
+ 

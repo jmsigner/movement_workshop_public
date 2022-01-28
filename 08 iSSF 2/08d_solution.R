@@ -1,7 +1,7 @@
 #######################################################X
 #----Analysis of Animal Movement Data in R Workshop----X
 #----------------Module 08 -- iSSF pt 2----------------X
-#----------------Last updated 2021-01-26---------------X
+#----------------Last updated 2021-01-27---------------X
 #-------------------Exercise Solution------------------X
 #######################################################X
 
@@ -38,7 +38,7 @@ summarize_sampling_rate(trk)
 # Only keep bursts that have at least 3 relocations. Then we can turn those
 # locations into steps.
 
-stp <- track_resample(trk, rate = hours(8), tolerance = minutes(15)) %>% 
+stp <- track_resample(trk, rate = hours(4), tolerance = minutes(15)) %>% 
   filter_min_n_burst(min_n = 3) %>% 
   steps_by_burst()
 
@@ -301,8 +301,8 @@ fig_dat %>%
   theme_bw()
 
 # You can see that the 95% confidence intervals all overlap with log-RSS of 0,
-# except for during the day during summer. This seems like good support for
-# our hypothesis that our cougar uses trees for shade during summer.
+# except for during the day during other. This is the opposite of our
+# hypothesis that our cougar uses trees for shade during summer.
 
 # 5. Movement figures ----
 # Now let's make a figure to look at our hypothesis that movement slows down
@@ -364,7 +364,7 @@ step_fig_dat <- gamma_elev %>%
   # Convert to tibble for nested data.frame
   as_tibble() %>%
   # Add elevation as list column
-  mutate(elev_list = list(tibble(sl = seq(1, 1000, length.out = 100)))) %>% 
+  mutate(elev_list = list(tibble(sl = seq(1, 2000, length.out = 100)))) %>% 
   # Unnest
   unnest(cols = elev_list) %>% 
   # Calculate probability density

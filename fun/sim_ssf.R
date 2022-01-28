@@ -9,6 +9,15 @@
 
 simulate_ssf <- function(n_steps, n_ch, l = 1, coef, xy0, resc) {
   
+  ###
+  # n_steps = 500
+  # n_ch = 10
+  # l = 0.2
+  # xy0 = c(100, 100)
+  # resc = covars
+  # coef = c(0.01, 0)
+  ###
+  
   sl <- rexp(n_steps * n_ch, rate = l)
   ta <- runif(n_steps * n_ch, -pi, pi)
   

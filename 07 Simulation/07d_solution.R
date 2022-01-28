@@ -6,8 +6,9 @@ source("fun/dispersal_kernel.R")
 # 1. Simulate a binary landscape encoded 0 and 1. This could be for example a matrix of forest and non-forest. 
 # Landscape
 
+set.seed(123)
 lscp <- nlm_gaussianfield(200, 200)
-plot(lscp)
+raster::plot(lscp)
 
 lscp <- lscp > 0.5
 plot(lscp)
@@ -38,9 +39,10 @@ plot(dk1)
 # ii. The animal moves with the same step-length distribution as in i) but now shows a preference for habitat 1.
 
 # Now we add a selection for layer (note the use of `layer_end` here)
+lscp
 dk2 <- dispersal_kernel(
   ~ sl_ + log_sl_ + layer_end, 
-  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 3), 
+  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 1), 
   spatial.covars = stack(lscp), start = c(100, 100), 
   max.dist = 50, return.raster = TRUE)
 plot(dk2)
@@ -54,7 +56,7 @@ plot(dk2)
 kappa_to_cos_ta(5)
 dk3 <- dispersal_kernel(
   ~ sl_ + log_sl_ + layer_end + cos_ta_, 
-  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 3, "cos_ta_" = 5), 
+  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 1, "cos_ta_" = 5), 
   spatial.covars = stack(lscp), start = c(100, 100), 
   max.dist = 50, return.raster = TRUE)
 plot(dk3)
@@ -62,7 +64,7 @@ plot(dk3)
 # Note, we could also set the direction
 dk3 <- dispersal_kernel(
   ~ sl_ + log_sl_ + layer_end + cos_ta_, 
-  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 3, "cos_ta_" = 2), 
+  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 1, "cos_ta_" = 5), 
   spatial.covars = stack(lscp), start = c(100, 100), direction = pi,
   max.dist = 50, return.raster = TRUE)
 plot(dk3)
@@ -70,7 +72,7 @@ plot(dk3)
 
 dk3 <- dispersal_kernel(
   ~ sl_ + log_sl_ + layer_end + cos_ta_, 
-  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 3, "cos_ta_" = 2), 
+  coefficients = c("sl_" = -0.2, "log_sl_" = 1, "layer_end" = 3, "cos_ta_" = 5), 
   spatial.covars = stack(lscp), start = c(100, 100), direction = pi/2,
   max.dist = 50, return.raster = TRUE)
 plot(dk3)
